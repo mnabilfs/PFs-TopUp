@@ -11,12 +11,16 @@ const CardTopup = () => {
     { value: 170, price: 150000 },
     { value: 240, price: 200000 },
     { value: 500, price: 400000 },
+    { value: 500, price: 400000 },
+    { value: 500, price: 400000 },
+    { value: 500, price: 400000 },
+    { value: 500, price: 400000 },
   ]);
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-10">
       {dataCardTopup.map((data, index) => (
-        <Card key={index} className="!bg-purple-800 text-white shadow-md">
+        <Card key={index} className="!bg-purple-800 text-white shadow-md cursor-pointer">
           <h5 className="text-xl font-semibold tracking-tight">
             {data.value} Diamonds
           </h5>
