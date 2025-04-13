@@ -1,14 +1,31 @@
 import React from "react";
-import { Button } from "flowbite-react";
+import HeaderBar from "../components/HeaderBar";
+import CardTopup from "../components/CardTopup";
 
 const Topup_ml = () => {
   return (
-    <div className="bg-gray-900 h-screen w-full">
-      <div className="flex flex-col justify-center items-center gap-5 h-screen ">
-        <div className="text-white font-bold text-4xl">
-          Hai ini topup_ml
+    <div className="b-white w-full">
+      {/* Banner */}
+      <div className="px-20 flex flex-col gap-20">
+        <div className="w-full relative flex justify-center mt-10">
+          <img
+            src=""
+            alt="Banner Mobile Legends"
+            className=" object-cover object-center h-[300px] w-[1285px] bg-gray-300"
+          />
         </div>
-          <Button className="cursor-pointer">Click me</Button>
+
+        {/* Step 1 */}
+        <div className="w-full grid grid-cols-2 md:grid-cols-3 gap-6">
+          <div className="col-span-2 bg-red-300">
+            <HeaderBar step={1} label={"Pilih Nominal"} width={"w-full"} />
+            <CardTopup />
+          </div>
+
+          <div className="col-span-1 bg-blue-300">
+            <HeaderBar step={2} label={"Masukan Player ID"} width={"w-full"} />
+          </div>
+        </div>
       </div>
     </div>
   );
