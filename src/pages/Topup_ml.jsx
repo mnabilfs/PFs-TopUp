@@ -12,28 +12,28 @@ const Topup_ml = () => {
   useEffect(() => {
     document.title = "Top Up Mobile Legends | Paper Fires Store";
   }, []);
-  
+
   return (
-    <div className="bg-gray-400 w-full">
+    <div className="bg-gray-800 w-full">
       {/* Banner */}
-      <div className="px-20 flex flex-col gap-20">
+      <div className="px-20 flex flex-col gap-10">
         <div className="w-full relative flex justify-center mt-10">
           <img
             src="https://i.pinimg.com/736x/cd/54/ef/cd54efa2496b840ace4800f214708847.jpg"
             alt="Banner Mobile Legends"
-            className=" object-cover object-center h-[490px] w-[1470px] bg-gray-300 rounded-2xl"
+            className=" object-cover object-center h-[490px] w-[1470px] rounded-2xl"
           />
         </div>
 
-        <div className="w-full mb-4 grid grid-cols-2 md:grid-cols-3 gap-15">
+        <div className="w-full mb-4 grid grid-cols-2 md:grid-cols-3 gap-5 ">
           {/* Step 1 */}
-          <div className="col-span-2 ">
+          <div className="col-span-2  p-4 rounded-xl">
             <HeaderBar step={1} label={"Pilih Nominal"} width={"w-full"} />
             <CardTopup />
           </div>
 
           {/* Step 2 */}
-          <div className="col-span-1  flex flex-col items-center gap-5">
+          <div className="col-span-1  flex flex-col items-center gap-5  p-4 rounded-xl">
             <HeaderBar step={2} label={"Masukan Player ID"} width={"w-full"} />
             <Card className="max-w-md w-full !bg-purple-900">
               <form className="flex flex-col gap-4">
