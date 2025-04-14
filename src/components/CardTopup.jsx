@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Card } from "flowbite-react";
+import { numberToRupiah } from "../utils/number-to-rupiah";
 
 const CardTopup = () => {
   const [selectedCard, setSelectedCard] = useState(null);
@@ -25,15 +26,6 @@ const CardTopup = () => {
     { value: 500, price: 400000 },
   ]);
 
-  const formatIDR = (number) => {
-    return new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency: "IDR",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(number);
-  };
-
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-10 p-5">
       {dataCardTopup.map((data, index) => (
@@ -56,7 +48,7 @@ const CardTopup = () => {
           </div>
           <div className="-mt-2 flex items-center justify-between">
             <span className="ml-4 text-md font-semibold">
-              {formatIDR(data.price)}
+              {numberToRupiah(data.price)}
             </span>
           </div>
         </Card>
