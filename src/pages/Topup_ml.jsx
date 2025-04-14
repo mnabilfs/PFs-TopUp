@@ -1,12 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import HeaderBar from "../components/HeaderBar";
 import CardTopup from "../components/CardTopup";
 import { Button, Card, Checkbox, Label, TextInput } from "flowbite-react";
 import CardPayment from "../components/CardPayment";
+import ModalDetailPesanan from "../components/ModalDetailPesanan";
 
 const Topup_ml = () => {
   const [selectedPayment, setSelectedPayment] = useState(null);
+  const [openModal, setOpenModal] = useState(false);
 
+  useEffect(() => {
+    document.title = "Top Up Mobile Legends | Paper Fires Store";
+  }, []);
+  
   return (
     <div className="bg-gray-400 w-full">
       {/* Banner */}
@@ -141,6 +147,7 @@ const Topup_ml = () => {
                 <Button
                   type="submit"
                   className="h-9 w-35 self-end cursor-pointer rounded-3xl text-md"
+                  onClick={() => setOpenModal(true)}
                 >
                   Beli
                 </Button>
@@ -149,6 +156,12 @@ const Topup_ml = () => {
           </div>
         </div>
       </div>
+
+      {/* Modal Detail Pesanan */}
+      <ModalDetailPesanan
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+      />
     </div>
   );
 };
