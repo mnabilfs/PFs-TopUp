@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Card } from "flowbite-react";
 
 const CardTopup = () => {
+  const [selectedCard, setSelectedCard] = useState(null);
+
   const [dataCardTopup, setDataCArdTopup] = useState([
     { value: 3, price: 5000 },
     { value: 12, price: 15000 },
@@ -15,17 +17,47 @@ const CardTopup = () => {
     { value: 500, price: 400000 },
     { value: 500, price: 400000 },
     { value: 500, price: 400000 },
+    { value: 500, price: 400000 },
+    { value: 500, price: 400000 },
+    { value: 500, price: 400000 },
+    { value: 500, price: 400000 },
+    { value: 500, price: 400000 },
+    { value: 500, price: 400000 },
   ]);
 
+  const formatIDR = (number) => {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(number);
+  };
+
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-10">
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-10 p-5">
       {dataCardTopup.map((data, index) => (
-        <Card key={index} className="!bg-purple-800 text-white shadow-md cursor-pointer">
-          <h5 className="text-xl font-semibold tracking-tight">
-            {data.value} Diamonds
-          </h5>
-          <div className="flex items-center justify-between">
-            <span className="text-2xl font-bold">Rp {data.price}</span>
+        <Card
+          key={index}
+          onClick={() => setSelectedCard(index)}
+          className={`cursor-pointer shadow-xl text-white  ${
+            selectedCard === index ? "!bg-purple-700 " : "!bg-purple-900"
+          }`}
+        >
+          <div className="flex items-center gap-3">
+            <img
+              src="https://www.transparentpng.com/thumb/diamond/O3UOts-diamond-best-png.png"
+              alt=""
+              className="h-[2rem] w-[2rem]"
+            />
+            <h5 className="text-md font-medium tracking-tight">
+              {data.value} Diamonds
+            </h5>
+          </div>
+          <div className="-mt-2 flex items-center justify-between">
+            <span className="ml-4 text-md font-semibold">
+              {formatIDR(data.price)}
+            </span>
           </div>
         </Card>
       ))}
