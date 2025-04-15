@@ -1,6 +1,11 @@
 import React from 'react'
+import { useEffect } from 'react'
 
 const NotFound = () => {
+  useEffect(() => {
+      document.title = "404 | Not Found";
+    }, []);
+
   return (
     <div className="flex items-center justify-center h-screen bg-gray-950">
       <div className="flex justify-center items-center gap-5">
