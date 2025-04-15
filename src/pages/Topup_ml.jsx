@@ -6,8 +6,21 @@ import CardPayment from "../components/CardPayment";
 import ModalDetailPesanan from "../components/ModalDetailPesanan";
 
 const Topup_ml = () => {
-  const [selectedPayment, setSelectedPayment] = useState(null);
+  const [selectedPayment, setSelectedPayment] = useState("QRIS");
+  const [selectedTopup, setSelectedTopup] = useState(null);
+  const [playerID, setPlayerID] = useState("");
+  const [zoneID, setZoneID] = useState("");
+  const [waNumber, setWaNumber] = useState("");
   const [openModal, setOpenModal] = useState(false);
+
+  const paymentImages = {
+    QRIS: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Logo_QRIS.svg/2560px-Logo_QRIS.svg.png",
+    DANA: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Logo_dana_blue.svg/1200px-Logo_dana_blue.svg.png",
+    GOPAY:
+      "https://antinomi.org/wp-content/uploads/2022/03/logo-gopay-vector.png",
+    MANDIRI:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Bank_Mandiri_logo_2016.svg/2560px-Bank_Mandiri_logo_2016.svg.png",
+  };
 
   useEffect(() => {
     document.title = "Top Up Mobile Legends | Paper Fires Store";
@@ -29,7 +42,10 @@ const Topup_ml = () => {
           {/* Step 1 */}
           <div className="col-span-2  p-4 rounded-xl">
             <HeaderBar step={1} label={"Pilih Nominal"} width={"w-full"} />
-            <CardTopup />
+            <CardTopup
+              selectedTopup={selectedTopup}
+              setSelectedTopup={setSelectedTopup}
+            />
           </div>
 
           {/* Step 2 */}
@@ -50,17 +66,21 @@ const Topup_ml = () => {
                       id="idplayer"
                       type="number"
                       placeholder="ID Player"
+                      value={playerID}
+                      onChange={(e) => setPlayerID(e.target.value)}
                       required
-                      className="bg-white rounded-lg w-full h-10 p-3 text-center text-xs placeholder-gray-400 focus:outline-none focus:ring-1 focus:border-purple-200"
+                      className="bg-white rounded-lg w-full h-10 p-3 text-center font-medium tracking-wide text-xs placeholder-gray-400 focus:outline-none focus:ring-1 focus:border-purple-200"
                     />
                   </div>
                   <div className="col-span-1">
                     <input
                       id="idzonaplayer"
                       type="number"
-                      placeholder="ID Player"
+                      placeholder="ID Zona"
+                      value={zoneID}
+                      onChange={(e) => setZoneID(e.target.value)}
                       required
-                      className="bg-white rounded-lg w-full h-10 p-3 text-center text-xs placeholder-gray-400 focus:outline-none focus:ring-1 focus:border-purple-200"
+                      className="bg-white rounded-lg w-full h-10 p-3 text-center font-medium tracking-wide text-xs placeholder-gray-400 focus:outline-none focus:ring-1 focus:border-purple-200"
                     />
                   </div>
                 </div>
@@ -75,49 +95,32 @@ const Topup_ml = () => {
             {/* Step 3 */}
             <HeaderBar step={3} label={"Pilih Pembayaran"} width={"w-full"} />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <CardPayment
-                img={
-                  "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Logo_QRIS.svg/2560px-Logo_QRIS.svg.png"
-                }
-                title={"QRIS"}
-                active={selectedPayment === "QRIS"}
-                onClick={() => setSelectedPayment("QRIS")}
-              />
-              <CardPayment
-                img={
-                  "https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Logo_dana_blue.svg/1200px-Logo_dana_blue.svg.png"
-                }
-                title={"DANA"}
-                active={selectedPayment === "DANA"}
-                onClick={() => setSelectedPayment("DANA")}
-              />
-              <CardPayment
-                img={
-                  "https://antinomi.org/wp-content/uploads/2022/03/logo-gopay-vector.png"
-                }
-                title={"GOPAY"}
-                active={selectedPayment === "GOPAY"}
-                onClick={() => setSelectedPayment("GOPAY")}
-              />
-              <CardPayment
-                img={
-                  "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Bank_Mandiri_logo_2016.svg/2560px-Bank_Mandiri_logo_2016.svg.png"
-                }
-                title={"MANDIRI"}
-                active={selectedPayment === "MANDIRI"}
-                onClick={() => setSelectedPayment("MANDIRI")}
-              />
+              {["QRIS", "DANA", "GOPAY", "MANDIRI"].map((method) => (
+                <CardPayment
+                  key={method}
+                  img={paymentImages[method]}
+                  title={method}
+                  active={selectedPayment === method}
+                  onClick={() => setSelectedPayment(method)}
+                />
+              ))}
             </div>
 
             {/* Step 4 */}
             <HeaderBar step={4} label={"Beli"} width={"w-full"} />
             <Card className="!bg-purple-900 max-w-md w-full">
-              <form className="flex flex-col gap-4">
+              <form
+                className="flex flex-col gap-4"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  setOpenModal(true);
+                }}
+              >
                 <div>
                   <div className="mb-4 block">
                     <Label htmlFor="inputWa" className="text-xs">
                       Opsional: Jika anda ingin mendapatkan bukti pembayaran
-                      atas pembelian anda, harap mengisi nomer whatsapp kamu.
+                      atas pembelian anda, harap mengisi nomer whatsapp kamu.
                     </Label>
                     <p className="text-xs text-gray-300 mt-2">
                       Format nomor:{" "}
@@ -130,8 +133,10 @@ const Topup_ml = () => {
                     id="idplayer"
                     type="tel"
                     placeholder="Harap Masukan Nomer Whatsapp"
+                    value={waNumber}
+                    onChange={(e) => setWaNumber(e.target.value)}
                     required
-                    className="bg-white rounded-lg w-full h-10 p-3 text-center text-xs placeholder-gray-400  focus:outline-none focus:ring-1 focus:border-purple-200"
+                    className="bg-white rounded-lg w-full h-10 p-3 font-medium text-center tracking-wide text-xs placeholder-gray-400  focus:outline-none focus:ring-1 focus:border-purple-200"
                   />
                 </div>
 
@@ -161,6 +166,13 @@ const Topup_ml = () => {
       <ModalDetailPesanan
         open={openModal}
         onClose={() => setOpenModal(false)}
+        data={{
+          selectedTopup,
+          playerID,
+          zoneID,
+          waNumber,
+          selectedPayment,
+        }}
       />
     </div>
   );

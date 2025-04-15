@@ -8,7 +8,7 @@ function CardPayment({ img, title, active, onClick }) {
   return (
     <Card
       onClick={onClick}
-      className={`w-[12rem] cursor-pointer shadow-2xl !border-1 h-30 ${
+      className={`w-[12rem] cursor-pointer shadow-2xl transition-all duration-300 !border-1 h-30 ${
         active ? "!bg-purple-700 " : "!bg-gray-100 border-purple-900"
       }`}
     >
