@@ -8,10 +8,38 @@ import ModalDetailPesanan from "../components/ModalDetailPesanan";
 const Topup_ml = () => {
   const [selectedPayment, setSelectedPayment] = useState("QRIS");
   const [selectedTopup, setSelectedTopup] = useState(null);
-  const [playerID, setPlayerID] = useState("");
-  const [zoneID, setZoneID] = useState("");
   const [waNumber, setWaNumber] = useState("");
   const [openModal, setOpenModal] = useState(false);
+  const [playerId, setPlayerID] = useState("");
+  const [serverId, setServerId] = useState("");
+  const [nickname, setNickname] = useState(null);
+
+  // Validasi Button Beli
+  const isFormValid = playerId && serverId && selectedTopup && selectedPayment;
+
+  const handleBuyClick = async () => {
+    await handleLookup();
+    setOpenModal(true);
+  };
+
+  const handleLookup = async () => {
+    if (!playerId || !serverId) return;
+
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const dummyNicknames = [
+          "ZilongHero",
+          "MageMaster",
+          "AldousGod",
+          "MLKing",
+        ];
+        const randomNickname =
+          dummyNicknames[Math.floor(Math.random() * dummyNicknames.length)];
+        setNickname(randomNickname);
+        resolve();
+      }, 300);
+    });
+  };
 
   const paymentImages = {
     QRIS: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Logo_QRIS.svg/2560px-Logo_QRIS.svg.png",
@@ -66,21 +94,27 @@ const Topup_ml = () => {
                       id="idplayer"
                       type="number"
                       placeholder="ID Player"
-                      value={playerID}
-                      onChange={(e) => setPlayerID(e.target.value)}
+                      value={playerId}
+                      onChange={(e) => {
+                        const value = e.target.value.slice(0, 9);
+                        setPlayerID(value);
+                      }}
                       required
-                      className="bg-white rounded-lg w-full h-10 p-3 text-center font-medium tracking-wide text-xs placeholder-gray-400 focus:outline-none focus:ring-1 focus:border-purple-200"
+                      className="bg-white rounded-lg w-full h-10 p-3 text-center tracking-wide text-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:border-purple-200"
                     />
                   </div>
                   <div className="col-span-1">
                     <input
-                      id="idzonaplayer"
+                      id="idserverplayer"
                       type="number"
-                      placeholder="ID Zona"
-                      value={zoneID}
-                      onChange={(e) => setZoneID(e.target.value)}
+                      placeholder="Server ID"
+                      value={serverId}
+                      onChange={(e) => {
+                        const value = e.target.value.slice(0, 4);
+                        setServerId(value);
+                      }}
                       required
-                      className="bg-white rounded-lg w-full h-10 p-3 text-center font-medium tracking-wide text-xs placeholder-gray-400 focus:outline-none focus:ring-1 focus:border-purple-200"
+                      className="bg-white rounded-lg w-full h-10 p-3 text-center tracking-wide text-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:border-purple-200"
                     />
                   </div>
                 </div>
@@ -125,7 +159,7 @@ const Topup_ml = () => {
                     <p className="text-xs text-gray-300 mt-2">
                       Format nomor:{" "}
                       <span className="font-medium text-white">
-                        +6281234567890
+                        6281234567890
                       </span>
                     </p>
                   </div>
@@ -134,9 +168,11 @@ const Topup_ml = () => {
                     type="tel"
                     placeholder="Harap Masukan Nomer Whatsapp"
                     value={waNumber}
-                    onChange={(e) => setWaNumber(e.target.value)}
-                    required
-                    className="bg-white rounded-lg w-full h-10 p-3 font-medium text-center tracking-wide text-xs placeholder-gray-400  focus:outline-none focus:ring-1 focus:border-purple-200"
+                    onChange={(e) => {
+                      const value = e.target.value.slice(0, 13);
+                      setWaNumber(value);
+                    }}
+                    className="bg-white rounded-lg w-full h-10 p-3 text-center tracking-wide text-sm placeholder-gray-400  focus:outline-none focus:ring-1 focus:border-purple-200"
                   />
                 </div>
 
@@ -152,7 +188,8 @@ const Topup_ml = () => {
                 <Button
                   type="submit"
                   className="h-9 w-35 self-end cursor-pointer rounded-3xl text-md"
-                  onClick={() => setOpenModal(true)}
+                  onClick={handleBuyClick}
+                  disabled={!isFormValid}
                 >
                   Beli
                 </Button>
@@ -168,11 +205,14 @@ const Topup_ml = () => {
         onClose={() => setOpenModal(false)}
         data={{
           selectedTopup,
-          playerID,
-          zoneID,
+          playerId,
+          serverId,
           waNumber,
           selectedPayment,
         }}
+        playerId={playerId}
+        serverId={serverId}
+        nickname={nickname}
       />
     </div>
   );

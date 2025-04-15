@@ -7,9 +7,10 @@ import {
   ModalHeader,
   Label,
 } from "flowbite-react";
+import { numberToRupiah } from "../utils/number-to-rupiah";
 
-const ModalDetailPesanan = ({ open, onClose, data }) => {
-  const { selectedTopup, playerID, zoneID, selectedPayment } = data;
+const ModalDetailPesanan = ({ open, onClose, data, nickname, playerId, serverId, }) => {
+  const { selectedTopup, selectedPayment } = data;
   const tax = selectedTopup ? selectedTopup.price * 0.12 : 0;
   const total = selectedTopup ? selectedTopup.price + tax : 0;
   return (
@@ -17,7 +18,7 @@ const ModalDetailPesanan = ({ open, onClose, data }) => {
       <ModalHeader className="bg-gray-200 !border-b-0">
         <div className="text-black font-bold">Detail Pesanan</div>
       </ModalHeader>
-      <ModalBody className="bg-gray-200">
+      <ModalBody className="bg-gray-200 -mt-5">
         <Label className="!text-black">
           Mohon konfirmasi Username anda sudah benar.
         </Label>
@@ -38,11 +39,11 @@ const ModalDetailPesanan = ({ open, onClose, data }) => {
           <div className="space-y-3 text-white text-sm">
             <div className="flex justify-between border-b border-gray-500/30 pb-2 text-black px-2">
               <span>Nickname:</span>
-              <span className="font-semibold">Vorenzy</span>
+              <span className="font-semibold">{nickname || "Belum ditemukan"}</span>
             </div>
             <div className="flex justify-between border-b border-gray-500/30 pb-2 text-black px-2">
               <span>ID:</span>
-              <span className="font-semibold">{playerID} ({zoneID})</span>
+              <span className="font-semibold">{playerId} ({serverId})</span>
             </div>
             <div className="flex justify-between border-b border-gray-500/30 pb-2 text-black px-2">
               <span>Bayar dengan:</span>
@@ -50,11 +51,11 @@ const ModalDetailPesanan = ({ open, onClose, data }) => {
             </div>
             <div className="flex justify-between border-b border-gray-500/30 pb-2 text-black px-2">
               <span>Harga:</span>
-              <span className="font-semibold">Rp {selectedTopup?.price?.toLocaleString("id-ID") || 0}</span>
+              <span className="font-semibold">{numberToRupiah(total)}</span>
             </div>
             <div className="flex justify-between pt-2 text-black px-2 -mt-2">
               <span>Pajak (12%):</span>
-              <span className="font-semibold">Rp {tax.toLocaleString("id-ID")}</span>
+              <span className="font-semibold">{numberToRupiah(tax)}</span>
             </div>
           </div>
         </div>
@@ -66,7 +67,7 @@ const ModalDetailPesanan = ({ open, onClose, data }) => {
         <div className="w-full flex justify-between items-center">
           <div className="flex flex-col justify-center gap-1">
             <p className="font-light">Total Pembayaran</p>
-            <h1 className="font-semibold">Rp. {total.toLocaleString("id-ID")}</h1>
+            <h1 className="font-semibold">{numberToRupiah(total)}</h1>
           </div>
           <Button onClick={onClose} className="w-30 cursor-pointer rounded-3xl">
             Konfirm

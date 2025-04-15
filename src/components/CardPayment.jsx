@@ -1,7 +1,6 @@
 "use client";
 import React from "react";
 import { Card } from "flowbite-react";
-import { numberToRupiah } from "../utils/number-to-rupiah";
 
 function CardPayment({ img, title, active, onClick }) {
 
@@ -21,13 +20,6 @@ function CardPayment({ img, title, active, onClick }) {
         >
           {title}
         </p>
-        <h5
-          className={`text-md font-bold tracking-tight ${
-            active ? "text-white" : "text-blue-600"
-          }`}
-        >
-          {numberToRupiah(1000)}
-        </h5>
       </div>
     </Card>
   );
