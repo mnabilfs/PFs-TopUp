@@ -2,6 +2,7 @@ import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Topup_ml from "./pages/Topup_ml";
 import NotFound from "./pages/NotFound";
+import Account_ml from "./pages/Account_ml";
 
 function App() {
 
@@ -10,6 +11,7 @@ function App() {
     <BrowserRouter>
     <Routes>
       <Route path="topup_ml" element={<Topup_ml />}/>
+      <Route path="account_ml" element={<Account_ml />}/>
       <Route path="*" element={<NotFound />} />
     </Routes>
     </BrowserRouter>
