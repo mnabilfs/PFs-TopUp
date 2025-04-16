@@ -10,12 +10,12 @@ const Topup_ml = () => {
   const [selectedTopup, setSelectedTopup] = useState(null);
   const [waNumber, setWaNumber] = useState("");
   const [openModal, setOpenModal] = useState(false);
-  const [playerId, setPlayerID] = useState("");
-  const [serverId, setServerId] = useState("");
+  const [userId, setUserId] = useState("");
+  const [zoneId, setZoneId] = useState("");
   const [nickname, setNickname] = useState(null);
 
   // Validasi Button Beli
-  const isFormValid = playerId && serverId && selectedTopup && selectedPayment;
+  const isFormValid = userId && zoneId && selectedTopup && selectedPayment;
 
   const handleBuyClick = async () => {
     await handleLookup();
@@ -23,7 +23,7 @@ const Topup_ml = () => {
   };
 
   const handleLookup = async () => {
-    if (!playerId || !serverId) return;
+    if (!userId || !zoneId) return;
 
     return new Promise((resolve) => {
       setTimeout(() => {
@@ -78,13 +78,13 @@ const Topup_ml = () => {
 
           {/* Step 2 */}
           <div className="col-span-1  flex flex-col items-center gap-5  p-4 rounded-xl">
-            <HeaderBar step={2} label={"Masukan Player ID"} width={"w-full"} />
+            <HeaderBar step={2} label={"Masukan User ID"} width={"w-full"} />
             <Card className="max-w-md w-full !bg-purple-900">
               <form className="flex flex-col gap-4">
                 <div>
                   <div className="mb-2 block">
                     <Label className="text-xs">
-                      *Isikan Player ID dan ID Zona sesuai akun anda.
+                      *Isikan User ID dan ID Zona sesuai akun anda.
                     </Label>
                   </div>
                 </div>
@@ -93,11 +93,11 @@ const Topup_ml = () => {
                     <input
                       id="idplayer"
                       type="number"
-                      placeholder="ID Player"
-                      value={playerId}
+                      placeholder="Masukan User ID"
+                      value={userId}
                       onChange={(e) => {
                         const value = e.target.value.slice(0, 9);
-                        setPlayerID(value);
+                        setUserId(value);
                       }}
                       required
                       className="bg-white rounded-lg w-full h-10 p-3 text-center tracking-wide text-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:border-purple-200"
@@ -107,11 +107,11 @@ const Topup_ml = () => {
                     <input
                       id="idserverplayer"
                       type="number"
-                      placeholder="Server ID"
-                      value={serverId}
+                      placeholder="Zone ID"
+                      value={zoneId}
                       onChange={(e) => {
                         const value = e.target.value.slice(0, 4);
-                        setServerId(value);
+                        setZoneId(value);
                       }}
                       required
                       className="bg-white rounded-lg w-full h-10 p-3 text-center tracking-wide text-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:border-purple-200"
@@ -153,7 +153,7 @@ const Topup_ml = () => {
                 <div>
                   <div className="mb-4 block">
                     <Label htmlFor="inputWa" className="text-xs">
-                      Opsional: Jika anda ingin mendapatkan bukti pembayaran
+                      Opsional: Jika ingin mendapatkan bukti pembayaran
                       atas pembelian anda, harap mengisi nomer whatsapp kamu.
                     </Label>
                     <p className="text-xs text-gray-300 mt-2">
@@ -189,7 +189,7 @@ const Topup_ml = () => {
                   type="submit"
                   className="h-9 w-35 self-end cursor-pointer rounded-3xl text-md"
                   onClick={handleBuyClick}
-                  disabled={!isFormValid}
+                  // disabled={!isFormValid}
                 >
                   Beli
                 </Button>
@@ -205,13 +205,13 @@ const Topup_ml = () => {
         onClose={() => setOpenModal(false)}
         data={{
           selectedTopup,
-          playerId,
-          serverId,
+          userId,
+          zoneId,
           waNumber,
           selectedPayment,
         }}
-        playerId={playerId}
-        serverId={serverId}
+        userId={userId}
+        zoneId={zoneId}
         nickname={nickname}
       />
     </div>
