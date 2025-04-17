@@ -9,7 +9,7 @@ import {
 } from "flowbite-react";
 import { numberToRupiah } from "../utils/number-to-rupiah";
 
-const ModalDetailPesanan = ({ open, onClose, data, nickname, playerId, serverId, }) => {
+const ModalDetailPesanan = ({ open, onClose, data, nickname, userId, zoneId, }) => {
   const { selectedTopup, selectedPayment } = data;
   const tax = selectedTopup ? selectedTopup.price * 0.12 : 0;
   const total = selectedTopup ? selectedTopup.price + tax : 0;
@@ -43,7 +43,7 @@ const ModalDetailPesanan = ({ open, onClose, data, nickname, playerId, serverId,
             </div>
             <div className="flex justify-between border-b border-gray-500/30 pb-2 text-black px-2">
               <span>ID:</span>
-              <span className="font-semibold">{playerId} ({serverId})</span>
+              <span className="font-semibold">{userId} ({zoneId})</span>
             </div>
             <div className="flex justify-between border-b border-gray-500/30 pb-2 text-black px-2">
               <span>Bayar dengan:</span>
