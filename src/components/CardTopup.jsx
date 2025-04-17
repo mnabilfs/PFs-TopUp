@@ -31,7 +31,7 @@ const CardTopup = ({ selectedTopup, setSelectedTopup }) => {
   }, [dataCardTopup, selectedTopup, setSelectedTopup]);
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4 md:mt-10 p-0 md:p-5 ">
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4 md:mt-6 ">
       {dataCardTopup.map((data, index) => {
         const isSelected =
           selectedTopup?.value === data.value &&

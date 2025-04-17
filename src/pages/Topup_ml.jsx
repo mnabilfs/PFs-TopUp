@@ -67,7 +67,7 @@ const Topup_ml = () => {
         </div>
 
         {/* Grid layout */}
-        <div className="w-full mb-4 grid grid-cols-1 md:grid-cols-3 gap-0 md:gap-5 ">
+        <div className="w-full mb-4 grid grid-cols-1 md:grid-cols-3 gap-0 md:gap-8 ">
           {/* Step 1 */}
           <div className="col-span-1 md:col-span-2 rounded-xl">
             <HeaderBar step={1} label={"Pilih Nominal"} width={"w-full"} />
@@ -103,7 +103,7 @@ const Topup_ml = () => {
                           setUserId(value);
                         }}
                         required
-                        className="bg-white rounded-lg w-full h-10 p-3 text-center tracking-wide text-xs md:text-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:border-purple-200"
+                        className="bg-white rounded-lg w-full h-10 p-3 text-center tracking-wide text-xs  placeholder-gray-400 focus:outline-none focus:ring-1 focus:border-purple-200"
                       />
                     </div>
                     <div className="col-span-1">
@@ -117,7 +117,7 @@ const Topup_ml = () => {
                           setZoneId(value);
                         }}
                         required
-                        className="bg-white rounded-lg w-full h-10 p-3 text-center tracking-wide text-xs md:text-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:border-purple-200"
+                        className="bg-white rounded-lg w-full h-10 p-3 text-center tracking-wide text-xs  placeholder-gray-400 focus:outline-none focus:ring-1 focus:border-purple-200"
                       />
                     </div>
                   </div>
@@ -179,7 +179,7 @@ const Topup_ml = () => {
                         const value = e.target.value.slice(0, 13);
                         setWaNumber(value);
                       }}
-                      className="bg-white rounded-lg w-full h-10 p-3 text-center tracking-wide text-xs md:text-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:border-purple-200"
+                      className="bg-white rounded-lg w-full h-10 p-3 text-center tracking-wide text-xs placeholder-gray-400 focus:outline-none focus:ring-1 focus:border-purple-200"
                     />
                   </div>
 
