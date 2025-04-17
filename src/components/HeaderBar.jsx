@@ -7,7 +7,7 @@ const HeaderBar = ({step, label, width}) => {
         <span className="text-black font-bold text-xl z-10">{step}</span>
       </div>
 
-      <h1 className="text-white font-semibold text-lg">{label}</h1>
+      <h1 className="text-white font-semibold text-md md:text-lg">{label}</h1>
     </div>
   )
 }

@@ -57,18 +57,19 @@ const Topup_ml = () => {
   return (
     <div className="bg-gray-800 w-full">
       {/* Banner */}
-      <div className="px-20 flex flex-col gap-10">
-        <div className="w-full relative flex justify-center mt-10">
+      <div className="px-10 md:px-20 flex flex-col gap-5 md:gap-10 ">
+        <div className="w-full md:w-full relative flex justify-center mt-10">
           <img
             src="https://i.pinimg.com/736x/cd/54/ef/cd54efa2496b840ace4800f214708847.jpg"
             alt="Banner Mobile Legends"
-            className=" object-cover object-center h-[490px] w-[1470px] rounded-2xl"
+            className="object-cover object-center w-full h-auto md:h-[490px] md:w-[1470px] rounded-2xl"
           />
         </div>
 
-        <div className="w-full mb-4 grid grid-cols-2 md:grid-cols-3 gap-5 ">
+        {/* Grid layout */}
+        <div className="w-full mb-4 grid grid-cols-1 md:grid-cols-3 gap-0 md:gap-5 ">
           {/* Step 1 */}
-          <div className="col-span-2  p-4 rounded-xl">
+          <div className="col-span-1 md:col-span-2 rounded-xl">
             <HeaderBar step={1} label={"Pilih Nominal"} width={"w-full"} />
             <CardTopup
               selectedTopup={selectedTopup}
@@ -76,125 +77,132 @@ const Topup_ml = () => {
             />
           </div>
 
-          {/* Step 2 */}
-          <div className="col-span-1  flex flex-col items-center gap-5  p-4 rounded-xl">
-            <HeaderBar step={2} label={"Masukan User ID"} width={"w-full"} />
-            <Card className="max-w-md w-full !bg-purple-900">
-              <form className="flex flex-col gap-4">
-                <div>
-                  <div className="mb-2 block">
-                    <Label className="text-xs">
-                      *Isikan User ID dan ID Zona sesuai akun anda.
-                    </Label>
+          {/* Wrapper Steps 2, 3, and 4 */}
+          <div className=" mt-5 md:mt-0 col-span-1 md:col-span-1 flex flex-col gap-5 md:gap-5 ">
+            {/* Step 2 */}
+            <div className="w-full flex flex-col items-center gap-5 rounded-xl">
+              <HeaderBar step={2} label={"Masukan User ID"} width={"w-full"} />
+              <Card className=" w-full py-2 !bg-purple-900">
+                <form className="flex flex-col gap-4">
+                  <div>
+                    <div className="mb-2 block">
+                      <Label className="text-xs">
+                        *Isikan User ID dan ID Zona sesuai akun anda.
+                      </Label>
+                    </div>
                   </div>
-                </div>
-                <div className="grid grid-cols-3 items-center gap-2">
-                  <div className="col-span-2">
-                    <input
-                      id="idplayer"
-                      type="number"
-                      placeholder="Masukan User ID"
-                      value={userId}
-                      onChange={(e) => {
-                        const value = e.target.value.slice(0, 9);
-                        setUserId(value);
-                      }}
-                      required
-                      className="bg-white rounded-lg w-full h-10 p-3 text-center tracking-wide text-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:border-purple-200"
-                    />
+                  <div className="grid grid-cols-3 items-center gap-2">
+                    <div className="col-span-2">
+                      <input
+                        id="idplayer"
+                        type="number"
+                        placeholder="Masukan User ID"
+                        value={userId}
+                        onChange={(e) => {
+                          const value = e.target.value.slice(0, 9);
+                          setUserId(value);
+                        }}
+                        required
+                        className="bg-white rounded-lg w-full h-10 p-3 text-center tracking-wide text-xs md:text-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:border-purple-200"
+                      />
+                    </div>
+                    <div className="col-span-1">
+                      <input
+                        id="idserverplayer"
+                        type="number"
+                        placeholder="Zone ID"
+                        value={zoneId}
+                        onChange={(e) => {
+                          const value = e.target.value.slice(0, 4);
+                          setZoneId(value);
+                        }}
+                        required
+                        className="bg-white rounded-lg w-full h-10 p-3 text-center tracking-wide text-xs md:text-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:border-purple-200"
+                      />
+                    </div>
                   </div>
-                  <div className="col-span-1">
-                    <input
-                      id="idserverplayer"
-                      type="number"
-                      placeholder="Zone ID"
-                      value={zoneId}
-                      onChange={(e) => {
-                        const value = e.target.value.slice(0, 4);
-                        setZoneId(value);
-                      }}
-                      required
-                      className="bg-white rounded-lg w-full h-10 p-3 text-center tracking-wide text-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:border-purple-200"
-                    />
-                  </div>
-                </div>
-                <p className="text-white text-xs">
-                  Untuk menemukan ID Anda, klik pada ikon karakter. User ID
-                  tercantum di bawah nama karakter Anda. Contoh:
-                  '536326644(1234)'.
-                </p>
-              </form>
-            </Card>
+                  <p className="text-white text-xs">
+                    Untuk menemukan ID Anda, klik pada ikon karakter. User ID
+                    tercantum di bawah nama karakter Anda. Contoh:
+                    '536326644(1234)'.
+                  </p>
+                </form>
+              </Card>
+            </div>
 
             {/* Step 3 */}
-            <HeaderBar step={3} label={"Pilih Pembayaran"} width={"w-full"} />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {["QRIS", "DANA", "GOPAY", "MANDIRI"].map((method) => (
-                <CardPayment
-                  key={method}
-                  img={paymentImages[method]}
-                  title={method}
-                  active={selectedPayment === method}
-                  onClick={() => setSelectedPayment(method)}
-                />
-              ))}
+            <div className="w-full flex flex-col items-center gap-5 rounded-xl">
+              <HeaderBar step={3} label={"Pilih Pembayaran"} width={"w-full"} />
+              <div className="grid grid-cols-2 md:grid-cols-2 gap-4 w-full ">
+                {["QRIS", "DANA", "GOPAY", "MANDIRI"].map((method) => (
+                  <CardPayment
+                    key={method}
+                    img={paymentImages[method]}
+                    title={method}
+                    active={selectedPayment === method}
+                    onClick={() => setSelectedPayment(method)}
+                  />
+                ))}
+              </div>
             </div>
 
             {/* Step 4 */}
-            <HeaderBar step={4} label={"Beli"} width={"w-full"} />
-            <Card className="!bg-purple-900 max-w-md w-full">
-              <form
-                className="flex flex-col gap-4"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  setOpenModal(true);
-                }}
-              >
-                <div>
-                  <div className="mb-4 block">
-                    <Label htmlFor="inputWa" className="text-xs">
-                      Opsional: Jika ingin mendapatkan bukti pembayaran
-                      atas pembelian anda, harap mengisi nomer whatsapp kamu.
-                    </Label>
-                    <p className="text-xs text-gray-300 mt-2">
-                      Format nomor:{" "}
-                      <span className="font-medium text-white">
-                        6281234567890
-                      </span>
+            <div className="w-full flex flex-col items-center gap-5 rounded-xl">
+              <HeaderBar step={4} label={"Beli"} width={"w-full"} />
+              <Card className="!bg-purple-900  w-full">
+                <form
+                  className="flex flex-col gap-4"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    setOpenModal(true);
+                  }}
+                >
+                  <div>
+                    <div className="mb-4 block">
+                      <Label htmlFor="inputWa" className="text-xs">
+                        Opsional: Jika ingin mendapatkan bukti pembayaran atas
+                        pembelian anda, harap mengisi nomer whatsapp kamu.
+                      </Label>
+                      <p className="text-xs text-gray-300 mt-2">
+                        Format nomor:{" "}
+                        <span className="font-medium text-white">
+                          6281234567890
+                        </span>
+                      </p>
+                    </div>
+                    <input
+                      id="idplayer"
+                      type="tel"
+                      placeholder="Harap Masukan Nomer Whatsapp"
+                      value={waNumber}
+                      onChange={(e) => {
+                        const value = e.target.value.slice(0, 13);
+                        setWaNumber(value);
+                      }}
+                      className="bg-white rounded-lg w-full h-10 p-3 text-center tracking-wide text-xs md:text-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:border-purple-200"
+                    />
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id="AccWa"
+                      className="!bg-purple-900 !border-1 !border-white focus:ring-2 hover:!bg-gray-600"
+                    />
+                    <p className="text-white text-xs">
+                      Ya, Saya ingin menerima berita dan promosi dari Whatsapp
                     </p>
                   </div>
-                  <input
-                    id="idplayer"
-                    type="tel"
-                    placeholder="Harap Masukan Nomer Whatsapp"
-                    value={waNumber}
-                    onChange={(e) => {
-                      const value = e.target.value.slice(0, 13);
-                      setWaNumber(value);
-                    }}
-                    className="bg-white rounded-lg w-full h-10 p-3 text-center tracking-wide text-sm placeholder-gray-400  focus:outline-none focus:ring-1 focus:border-purple-200"
-                  />
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    id="AccWa"
-                    className="!bg-purple-900 !border-1 !border-white focus:ring-2 hover:!bg-gray-600"
-                  />
-                  <p className="text-white text-xs">
-                    Ya, Saya ingin menerima berita dan promosi dari Whatsapp
-                  </p>
-                </div>
-                <Button
-                  type="submit"
-                  className="h-9 w-35 self-end cursor-pointer rounded-3xl text-md"
-                  onClick={handleBuyClick}
-                  // disabled={!isFormValid}
-                >
-                  Beli
-                </Button>
-              </form>
-            </Card>
+                  <Button
+                    type="submit"
+                    className="h-9 w-35 self-end cursor-pointer rounded-3xl text-md"
+                    onClick={handleBuyClick}
+                    // disabled={!isFormValid}
+                  >
+                    Beli
+                  </Button>
+                </form>
+              </Card>
+            </div>
           </div>
         </div>
       </div>

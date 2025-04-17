@@ -31,7 +31,7 @@ const CardTopup = ({ selectedTopup, setSelectedTopup }) => {
   }, [dataCardTopup, selectedTopup, setSelectedTopup]);
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-10 p-5">
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4 md:mt-10 p-0 md:p-5 ">
       {dataCardTopup.map((data, index) => {
         const isSelected =
           selectedTopup?.value === data.value &&
@@ -55,12 +55,12 @@ const CardTopup = ({ selectedTopup, setSelectedTopup }) => {
                 alt=""
                 className="h-[2rem] w-[2rem]"
               />
-              <h5 className="text-md font-medium tracking-tight">
+              <h5 className="text-sm md:text-md font-medium tracking-tight">
                 {data.value} Diamonds
               </h5>
             </div>
             <div className="-mt-2 flex items-center justify-between">
-              <span className="ml-4 text-md font-semibold">
+              <span className="ml-4 text-sm md:text-md font-semibold">
                 {numberToRupiah(data.price)}
               </span>
             </div>
