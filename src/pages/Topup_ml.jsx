@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import HeaderBar from "../components/HeaderBar";
 import CardTopup from "../components/CardTopup";
 import { Button, Card, Checkbox, Label, TextInput } from "flowbite-react";
@@ -13,11 +13,17 @@ const Topup_ml = () => {
   const [userId, setUserId] = useState("");
   const [zoneId, setZoneId] = useState("");
   const [nickname, setNickname] = useState(null);
+  const [formError, setFormError] = useState(false);  
+  const step2Ref = useRef(null);  
 
-  // Validasi Button Beli
-  const isFormValid = userId && zoneId && selectedTopup && selectedPayment;
 
   const handleBuyClick = async () => {
+    if (!userId || !zoneId) {
+      setFormError(true);
+      step2Ref.current.scrollIntoView({ behavior: "smooth" });  
+      return;
+    }
+    setFormError(false);
     await handleLookup();
     setOpenModal(true);
   };
@@ -50,6 +56,8 @@ const Topup_ml = () => {
       "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Bank_Mandiri_logo_2016.svg/2560px-Bank_Mandiri_logo_2016.svg.png",
   };
 
+  
+
   useEffect(() => {
     document.title = "Top Up Mobile Legends | Paper Fires Store";
     
@@ -81,7 +89,7 @@ const Topup_ml = () => {
           {/* Wrapper Steps 2, 3, and 4 */}
           <div className=" mt-5 md:mt-0 col-span-1 md:col-span-1 flex flex-col gap-5 md:gap-5 ">
             {/* Step 2 */}
-            <div className="w-full flex flex-col items-center gap-5 rounded-xl">
+            <div ref={step2Ref} className="w-full flex flex-col items-center gap-5 rounded-xl">
               <HeaderBar step={2} label={"Masukan User ID"} width={"w-full"} />
               <Card className=" w-full !bg-purple-900 !border-purple-900">
                 <form className="flex flex-col gap-4">
@@ -122,6 +130,11 @@ const Topup_ml = () => {
                       />
                     </div>
                   </div>
+                  {formError && (
+                    <p className="text-red-500 text-xs">
+                      *User ID dan Zone ID harus diisi.
+                    </p>
+                  )}
                   <p className="text-white text-xs">
                     Untuk menemukan ID Anda, klik pada ikon karakter. User ID
                     tercantum di bawah nama karakter Anda. Contoh:
@@ -155,7 +168,7 @@ const Topup_ml = () => {
                   className="flex flex-col gap-4"
                   onSubmit={(e) => {
                     e.preventDefault();
-                    setOpenModal(true);
+                    handleBuyClick();
                   }}
                 >
                   <div>
@@ -197,7 +210,6 @@ const Topup_ml = () => {
                     type="submit"
                     className="h-9 w-35 self-end cursor-pointer rounded-3xl text-md"
                     onClick={handleBuyClick}
-                    // disabled={!isFormValid}
                   >
                     Beli
                   </Button>
