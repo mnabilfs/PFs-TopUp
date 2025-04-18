@@ -31,7 +31,7 @@ const CardTopup = ({ selectedTopup, setSelectedTopup }) => {
   }, [dataCardTopup, selectedTopup, setSelectedTopup]);
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4 md:mt-6 ">
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-4 mt-4 md:mt-6">
       {dataCardTopup.map((data, index) => {
         const isSelected =
           selectedTopup?.value === data.value &&
@@ -46,21 +46,21 @@ const CardTopup = ({ selectedTopup, setSelectedTopup }) => {
             className={`cursor-pointer shadow-xl text-white transition-all duration-300 ${
               isSelected
                 ? "!bg-purple-700 !border-purple-900"
-                : "!bg-purple-900"
+                : "!bg-purple-900 !border-purple-900"
             }`}
           >
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1 md:gap-3 ">
               <img
                 src="https://www.transparentpng.com/thumb/diamond/O3UOts-diamond-best-png.png"
                 alt=""
-                className="h-[2rem] w-[2rem]"
+                className="h-[1.2rem] w-[1.2rem] md:h-[2rem] md:w-[2rem]"
               />
-              <h5 className="text-sm md:text-md font-medium tracking-tight">
+              <h5 className="text-xs md:text-lg font-medium tracking-tight">
                 {data.value} Diamonds
               </h5>
             </div>
-            <div className="-mt-2 flex items-center justify-between">
-              <span className="ml-4 text-sm md:text-md font-semibold">
+            <div className="-mt-2 flex items-center justify-between ">
+              <span className="ml-4 text-xs md:text-lg font-semibold">
                 {numberToRupiah(data.price)}
               </span>
             </div>
