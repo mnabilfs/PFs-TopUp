@@ -52,6 +52,7 @@ const Topup_ml = () => {
 
   useEffect(() => {
     document.title = "Top Up Mobile Legends | Paper Fires Store";
+    
   }, []);
 
   return (
