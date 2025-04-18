@@ -13,16 +13,35 @@ const Topup_ml = () => {
   const [userId, setUserId] = useState("");
   const [zoneId, setZoneId] = useState("");
   const [nickname, setNickname] = useState(null);
-  const [formError, setFormError] = useState(false);  
-  const step2Ref = useRef(null);  
-
+  const [formError, setFormError] = useState(false);
+  const [userIdError, setUserIdError] = useState("");
+  const [zoneIdError, setZoneIdError] = useState("");
+  const step2Ref = useRef(null);
 
   const handleBuyClick = async () => {
+    setUserIdError("");
+    setZoneIdError("");
+
     if (!userId || !zoneId) {
       setFormError(true);
-      step2Ref.current.scrollIntoView({ behavior: "smooth" });  
+      step2Ref.current.scrollIntoView({ behavior: "smooth" });
       return;
     }
+
+    if (userId.length !== 9) {
+      setFormError(false);
+      setUserIdError("*Format ID salah. Isikan sesuai format yang benar.");
+      step2Ref.current.scrollIntoView({ behavior: "smooth" });
+      return;
+    }
+
+    if (zoneId.length !== 4) {
+      setFormError(false);
+      setZoneIdError("*Format ID salah. Isikan sesuai format yang benar.");
+      step2Ref.current.scrollIntoView({ behavior: "smooth" });
+      return;
+    }
+
     setFormError(false);
     await handleLookup();
     setOpenModal(true);
@@ -56,11 +75,8 @@ const Topup_ml = () => {
       "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Bank_Mandiri_logo_2016.svg/2560px-Bank_Mandiri_logo_2016.svg.png",
   };
 
-  
-
   useEffect(() => {
     document.title = "Top Up Mobile Legends | Paper Fires Store";
-    
   }, []);
 
   return (
@@ -89,7 +105,10 @@ const Topup_ml = () => {
           {/* Wrapper Steps 2, 3, and 4 */}
           <div className=" mt-5 md:mt-0 col-span-1 md:col-span-1 flex flex-col gap-5 md:gap-5 ">
             {/* Step 2 */}
-            <div ref={step2Ref} className="w-full flex flex-col items-center gap-5 rounded-xl">
+            <div
+              ref={step2Ref}
+              className="w-full flex flex-col items-center gap-5 rounded-xl"
+            >
               <HeaderBar step={2} label={"Masukan User ID"} width={"w-full"} />
               <Card className=" w-full !bg-purple-900 !border-purple-900">
                 <form className="flex flex-col gap-4">
@@ -134,6 +153,12 @@ const Topup_ml = () => {
                     <p className="text-red-500 text-xs">
                       *User ID dan Zone ID harus diisi.
                     </p>
+                  )}
+                  {userIdError && (
+                    <p className="text-red-500 text-xs">{userIdError}</p>
+                  )}
+                  {zoneIdError && (
+                    <p className="text-red-500 text-xs">{zoneIdError}</p>
                   )}
                   <p className="text-white text-xs">
                     Untuk menemukan ID Anda, klik pada ikon karakter. User ID

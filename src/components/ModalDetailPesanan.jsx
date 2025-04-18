@@ -69,7 +69,7 @@ const ModalDetailPesanan = ({
               </div>
               <div className="flex justify-between border-b border-gray-500/30 text-xs md:text-md pb-2 text-black px-2">
                 <span>Harga:</span>
-                <span className="font-semibold">{numberToRupiah(total)}</span>
+                <span className="font-semibold">{numberToRupiah(selectedTopup?.price)}</span>
               </div>
               <div className="flex justify-between text-xs md:text-md pt-2 text-black px-2 -mt-2">
                 <span>Pajak (12%):</span>
