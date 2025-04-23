@@ -4,6 +4,7 @@ import CardTopup from "../components/CardTopup";
 import { Button, Card, Checkbox, Label, TextInput } from "flowbite-react";
 import CardPayment from "../components/CardPayment";
 import ModalDetailPesanan from "../components/ModalDetailPesanan";
+import FooterUniversal from "../components/FooterUniversal";
 
 const Topup_ml = () => {
   const [selectedPayment, setSelectedPayment] = useState("QRIS");
@@ -92,7 +93,7 @@ const Topup_ml = () => {
         </div>
 
         {/* Grid layout */}
-        <div className="w-full mb-4 grid grid-cols-1 md:grid-cols-3 gap-0 md:gap-8 ">
+        <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-0 md:gap-8 ">
           {/* Step 1 */}
           <div className="col-span-1 md:col-span-2 rounded-xl">
             <HeaderBar step={1} label={"Pilih Nominal"} width={"w-full"} />
@@ -244,6 +245,7 @@ const Topup_ml = () => {
           </div>
         </div>
       </div>
+      <FooterUniversal/>
 
       {/* Modal Detail Pesanan */}
       <ModalDetailPesanan
