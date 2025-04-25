@@ -17,7 +17,7 @@ const Navbar = () => {
 
         <div className="flex-grow mx-6 max-w-xl">
           <div className="relative">
-            <HiOutlineSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black" />
+            <HiOutlineSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black cursor-pointer" />
             <input
               type="text"
               placeholder="Cari produk disini"

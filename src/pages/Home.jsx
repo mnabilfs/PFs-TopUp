@@ -29,7 +29,7 @@ const Home = () => {
                 leftControl={
                   <button
                     aria-label="Previous slide"
-                    className="bg-white p-2 rounded-full shadow absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1/2 z-10 cursor-pointer"
+                    className="bg-white p-2 rounded-full shadow absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1/2 z-10 cursor-pointer transition-colors duration-200 ease-in-out hover:bg-purple-700 hover:text-white active:bg-purple-800"
                   >
                     <HiChevronLeft className="text-black" size={24} />
                   </button>
@@ -37,7 +37,7 @@ const Home = () => {
                 rightControl={
                   <button
                     aria-label="Next slide"
-                    className="bg-white p-2 rounded-full shadow absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-1/2 z-10 cursor-pointer"
+                    className="bg-white p-2 rounded-full shadow absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-1/2 z-10 cursor-pointer transition-colors duration-200 ease-in-out hover:bg-purple-700 hover:text-white active:bg-purple-800"
                   >
                     <HiChevronRight className="text-black" size={24} />
                   </button>
