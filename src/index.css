@@ -32,4 +32,10 @@ input[type="number"] {
   animation: fadeIn .7s ease-out;
 }
 
-
+.hide-scrollbar {
+  -ms-overflow-style: none;  
+  scrollbar-width: none;     
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;             
+}
