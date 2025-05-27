@@ -20,6 +20,23 @@ const ModalDetailPesanan = ({
   const { selectedTopup, selectedPayment } = data;
   const tax = selectedTopup ? selectedTopup.price * 0.12 : 0;
   const total = selectedTopup ? selectedTopup.price + tax : 0;
+
+  const handleKonfirmasi = () => {
+    const message = `Halo, saya ingin membeli Diamond Mobile Legends.\n\n` +
+      `Game: Mobile Legends\n` +
+      `Nickname: ${nickname || "Belum ditemukan"}\n` +
+      `ID: ${userId} (${zoneId})\n` +
+      `Jumlah: ${selectedTopup?.value || 0} Diamond\n` +
+      `Pembayaran: ${selectedPayment}\n` +
+      `Total Pembayaran: ${numberToRupiah(total)}\n\n` +
+      `Mohon konfirmasi ketersediaan akun ini. Terima kasih!`;
+
+    const waNumber = "6289527400005"; 
+    const waLink = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
+
+    window.open(waLink, "_blank");
+  };
+
   return (
     <Modal
       show={open}
@@ -88,7 +105,7 @@ const ModalDetailPesanan = ({
               <h1 className="font-semibold text-md md:text-lg">{numberToRupiah(total)}</h1>
             </div>
             <Button
-              onClick={onClose}
+              onClick={handleKonfirmasi}
               className="w-25 md:w-30 text-sm md:text-md cursor-pointer rounded-3xl"
             >
               Konfirm

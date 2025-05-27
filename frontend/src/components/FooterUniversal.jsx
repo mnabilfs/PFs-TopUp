@@ -22,7 +22,7 @@ const FooterUniversal = () => {
               <FooterLink href="#">Kebijakan Privasi</FooterLink>
             </div>
             <FooterBrand
-              href="#"
+              href="/"
               src={PFSLogo}
               alt="PFS Store Logo"
               className="scale-140"
