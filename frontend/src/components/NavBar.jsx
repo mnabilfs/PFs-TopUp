@@ -1,17 +1,17 @@
-import React, { useState, useRef } from 'react';
-import Logo from '../assets/PFs Logo.png';
+import React, { useState, useRef } from "react";
+import Logo from "../assets/PFs Logo.png";
 import {
   HiOutlineSearch,
   HiOutlineMail,
   HiOutlineShoppingCart,
-} from 'react-icons/hi';
+} from "react-icons/hi";
 
 const Navbar = () => {
   const [searchOpen, setSearchOpen] = useState(false);
   const inputRef = useRef(null);
 
   const toggleSearch = () => {
-    setSearchOpen(prev => !prev);
+    setSearchOpen((prev) => !prev);
     if (!searchOpen) {
       setTimeout(() => inputRef.current?.focus(), 200);
     }
@@ -23,7 +23,13 @@ const Navbar = () => {
         <div className="container mx-auto flex items-center justify-between h-10 md:h-14 px-4 md:px-8">
           {/* Logo */}
           <div className="flex items-center">
-            <img src={Logo} alt="PFs Store Logo" className="h-9 md:h-12 w-auto" />
+            <a href="/" aria-label="Go to Home">
+              <img
+                src={Logo}
+                alt="PFs Store Logo"
+                className="h-9 md:h-12 w-auto"
+              />
+            </a>
           </div>
 
           {/* Mobile & Tablet: Search*/}
@@ -39,7 +45,10 @@ const Navbar = () => {
 
           {/* Desktop & larger tablet*/}
           <div className="hidden sm:flex flex-grow mx-6 max-w-xl relative">
-            <HiOutlineSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black cursor-pointer" size={20} />
+            <HiOutlineSearch
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black cursor-pointer"
+              size={20}
+            />
             <input
               type="text"
               placeholder="Cari produk disini"
@@ -65,7 +74,10 @@ const Navbar = () => {
       {searchOpen && (
         <div className="sm:hidden bg-purple-900 px-6 py-2 border-b border-bg-purple-900">
           <div className="relative">
-            <HiOutlineSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" size={20} />
+            <HiOutlineSearch
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+              size={20}
+            />
             <input
               ref={inputRef}
               type="text"

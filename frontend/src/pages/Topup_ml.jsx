@@ -5,6 +5,7 @@ import { Button, Card, Checkbox, Label, TextInput } from "flowbite-react";
 import CardPayment from "../components/CardPayment";
 import ModalDetailPesanan from "../components/ModalDetailPesanan";
 import FooterUniversal from "../components/FooterUniversal";
+import Navbar from "../components/NavBar";
 
 const Topup_ml = () => {
   const [selectedPayment, setSelectedPayment] = useState("QRIS");
@@ -83,6 +84,7 @@ const Topup_ml = () => {
   return (
 
     <div className="bg-gray-800 w-full">
+      <Navbar/>
       <div className="px-2 md:px-15 flex flex-col gap-5 md:gap-10">
         {/* Banner */}
         <div className="w-full md:w-full relative flex justify-center mt-10">
