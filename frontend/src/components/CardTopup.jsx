@@ -4,24 +4,23 @@ import { numberToRupiah } from "../utils/number-to-rupiah";
 
 const CardTopup = ({ selectedTopup, setSelectedTopup }) => {
   const [dataCardTopup, setDataCardTopup] = useState([
-    { value: 3, price: 5000 },
-    { value: 12, price: 15000 },
-    { value: 28, price: 30000 },
-    { value: 59, price: 50000 },
-    { value: 85, price: 75000 },
-    { value: 170, price: 150000 },
-    { value: 240, price: 200000 },
-    { value: 500, price: 400000 },
-    { value: 600, price: 470000 },
-    { value: 700, price: 540000 },
-    { value: 850, price: 650000 },
-    { value: 1000, price: 750000 },
-    { value: 1200, price: 880000 },
-    { value: 1400, price: 1000000 },
-    { value: 1700, price: 1200000 },
-    { value: 2000, price: 1400000 },
-    { value: 2500, price: 1650000 },
-    { value: 3000, price: 1900000 },
+    { value: 3, price: 1171 },
+    { value: 5, price: 1423 },
+    { value: 12, price: 3323 },
+    { value: 19, price: 5223 },
+    { value: 28, price: 7600 },
+    { value: 44, price: 11400 },
+    { value: 59, price: 15200 },
+    { value: 85, price: 21850 },
+    { value: 170, price: 43700 },
+    { value: 240, price: 61750 },
+    { value: 296, price: 76000 },
+    { value: 408, price: 104500 },
+    { value: 568, price: 142500 },
+    { value: 875, price: 218500 },
+    { value: 2010, price: 475000 },
+    { value: 4830, price: 1140000 }
+    
   ]);
 
   useEffect(() => {

@@ -1,25 +1,19 @@
-import React from "react";
+import React, { useEffect, useState, useRef } from "react";
+import Navbar from "../components/NavBar";
+import FooterUniversal from "../components/FooterUniversal";
 
 const ProductDetail = () => {
   const sellerPhoneNumber = "6281234567890"; // ganti dengan nomor penjual asli
   const whatsappLink = `https://wa.me/${sellerPhoneNumber}`;
 
+  useEffect(() => {
+    document.title = "Account Mobile Legends | Paper Fires Store";
+  }, []);
+
   return (
     <div className="bg-gray-900 min-h-screen flex flex-col text-white">
-      {/* Header */}
-      <header className="bg-purple-900 p-4 flex justify-between items-center">
-        <div className="text-xl font-bold">PAPER FIRES STORE</div>
-        <input
-          type="text"
-          placeholder="Cari produk disini"
-          className="rounded-lg px-3 py-1 text-black w-1/2"
-        />
-        <div className="flex gap-4 items-center">
-          <i className="fa-regular fa-envelope" />
-          <i className="fa-solid fa-cart-shopping" />
-          <i className="fa-regular fa-user" />
-        </div>
-      </header>
+      {/* Navbar */}
+      <Navbar />
 
       {/* Main */}
       <main className="flex flex-col lg:flex-row p-4 gap-8">
@@ -35,9 +29,12 @@ const ProductDetail = () => {
               <div key={i} className="w-16 h-16 bg-gray-700 rounded" />
             ))}
           </div>
-          <h2 className="text-lg font-bold mt-4 text-center">Deskripsi Produk</h2>
+          <h2 className="text-lg font-bold mt-4 text-center">
+            Deskripsi Produk
+          </h2>
           <p className="text-sm text-gray-300 mt-2 text-center">
-            Akun GG dengan skin lengkap, rank tinggi, promo murah. Siap push rank!
+            Akun GG dengan skin lengkap, rank tinggi, promo murah. Siap push
+            rank!
           </p>
         </div>
 
@@ -48,7 +45,9 @@ const ProductDetail = () => {
               (853) Akun GG Mobile Legends PROMO MURAH
             </h1>
             <p className="text-sm text-gray-400">Mobile Legends</p>
-            <p className="text-lg font-bold mt-2 text-green-400">Rp500.000 / Akun</p>
+            <p className="text-lg font-bold mt-2 text-green-400">
+              Rp500.000 / Akun
+            </p>
             <span className="bg-purple-800 text-white px-3 py-1 rounded-full text-xs inline-block mt-2">
               Ditambahkan pada: 24/02/2025
             </span>
@@ -76,14 +75,7 @@ const ProductDetail = () => {
       </main>
 
       {/* Footer */}
-      <footer className="bg-purple-900 text-white p-4 text-center text-xs mt-8">
-        <div className="flex flex-col md:flex-row justify-between items-center">
-          <span>© 2025 PFS Store™</span>
-          <span>Pemasaran dan Kemitraan</span>
-          <span>Syarat dan Ketentuan</span>
-          <span>Kebijakan Privasi</span>
-        </div>
-      </footer>
+      <FooterUniversal />
     </div>
   );
 };
