@@ -16,50 +16,57 @@ const ModalDetailPesanan = ({
   nickname,
   userId,
   zoneId,
+  snapToken,
 }) => {
-  const { selectedTopup, selectedPayment } = data;
+  const { selectedTopup} = data;
   const tax = selectedTopup ? selectedTopup.price * 0.12 : 0;
   const total = selectedTopup ? selectedTopup.price + tax : 0;
 
   const handleKonfirmasi = () => {
-    const message = `Halo, saya ingin membeli Diamond Mobile Legends.\n\n` +
-      `Game: Mobile Legends\n` +
-      `Nickname: ${nickname || "Belum ditemukan"}\n` +
-      `ID: ${userId} (${zoneId})\n` +
-      `Jumlah: ${selectedTopup?.value || 0} Diamond\n` +
-      `Pembayaran: ${selectedPayment}\n` +
-      `Total Pembayaran: ${numberToRupiah(total)}\n\n` +
-      `Mohon konfirmasi ketersediaan akun ini. Terima kasih!`;
+  if (snapToken) {
+    window.snap.pay(snapToken, {
+      onSuccess: function(result) {
+        console.log("Success:", result);
+      },
+      onPending: function(result) {
+        console.log("Pending:", result);
+      },
+      onError: function(result) {
+        console.log("Error:", result);
+      },
+      onClose: function() {
+        console.log("Popup ditutup.");
+      },
+    });
+  } else {
+    alert("Token tidak tersedia.");
+  }
+};
 
-    const waNumber = "6289527400005"; 
-    const waLink = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
-
-    window.open(waLink, "_blank");
-  };
 
   return (
     <Modal
       show={open}
       size="md"
       onClose={onClose}
-      backdropClasses="hidden"
+      // backdropClasses="hidden"
       className="fixed inset-0 flex items-center justify-center z-50 h-screen pt-[25%] md:pt-0 overflow-hidden !bg-none"
     >
       <div className="w-full max-w-md mx-auto animate-fade-in">
         <ModalHeader className="bg-gray-200 !border-b-0">
-          <div className="text-black font-bold">Detail Pesanan</div>
+          <div className="font-bold text-black">Detail Pesanan</div>
         </ModalHeader>
-        <ModalBody className="bg-gray-200 -mt-5">
+        <ModalBody className="-mt-5 bg-gray-200">
           <Label className="!text-black text-xs md:text-md">
             Mohon konfirmasi Username anda sudah benar.
           </Label>
-          <div className="space-y-4 my-2">
+          <div className="my-2 space-y-4">
             {/* Diamond */}
-            <div className="flex items-center gap-3 bg-purple-800 p-3 my-4 rounded-lg shadow-sm">
+            <div className="flex items-center gap-3 p-3 my-4 bg-purple-800 rounded-lg shadow-sm">
               <img
                 src="https://www.transparentpng.com/thumb/diamond/O3UOts-diamond-best-png.png"
                 alt="logo dm"
-                className="h-6 w-6 md:h-8 md:w-8"
+                className="w-6 h-6 md:h-8 md:w-8"
               />
               <Label className="!text-white text-sm md:text-lg font-semibold">
                 {selectedTopup?.value || 0} Diamond
@@ -67,28 +74,24 @@ const ModalDetailPesanan = ({
             </div>
 
             {/* Info Detail Pemesanan */}
-            <div className="space-y-3 text-white text-sm">
-              <div className="flex justify-between border-b border-gray-500/30 text-xs md:text-md pb-2 text-black px-2">
+            <div className="space-y-3 text-sm text-white">
+              <div className="flex justify-between px-2 pb-2 text-xs text-black border-b border-gray-500/30 md:text-md">
                 <span>Nickname:</span>
                 <span className="font-semibold">
                   {nickname || "Belum ditemukan"}
                 </span>
               </div>
-              <div className="flex justify-between border-b border-gray-500/30 text-xs md:text-md pb-2 text-black px-2">
+              <div className="flex justify-between px-2 pb-2 text-xs text-black border-b border-gray-500/30 md:text-md">
                 <span>ID:</span>
                 <span className="font-semibold">
                   {userId} ({zoneId})
                 </span>
               </div>
-              <div className="flex justify-between border-b border-gray-500/30 text-xs md:text-md pb-2 text-black px-2">
-                <span>Bayar dengan:</span>
-                <span className="font-semibold">{selectedPayment}</span>
-              </div>
-              <div className="flex justify-between border-b border-gray-500/30 text-xs md:text-md pb-2 text-black px-2">
+              <div className="flex justify-between px-2 pb-2 text-xs text-black border-b border-gray-500/30 md:text-md">
                 <span>Harga:</span>
                 <span className="font-semibold">{numberToRupiah(selectedTopup?.price)}</span>
               </div>
-              <div className="flex justify-between text-xs md:text-md pt-2 text-black px-2 -mt-2">
+              <div className="flex justify-between px-2 pt-2 -mt-2 text-xs text-black md:text-md">
                 <span>Pajak (12%):</span>
                 <span className="font-semibold">{numberToRupiah(tax)}</span>
               </div>
@@ -99,16 +102,16 @@ const ModalDetailPesanan = ({
           className="bg-gray-200 !border-t-0"
           style={{ filter: "drop-shadow(0 25px 25px rgba(0, 0, 0, 0.75))" }}
         >
-          <div className="w-full flex justify-between items-center">
+          <div className="flex items-center justify-between w-full">
             <div className="flex flex-col justify-center gap-1">
-              <p className="font-light text-sm md:text-md">Total Pembayaran</p>
+              <p className="text-sm font-light md:text-md">Total Pembayaran</p>
               <h1 className="font-semibold text-md md:text-lg">{numberToRupiah(total)}</h1>
             </div>
             <Button
               onClick={handleKonfirmasi}
-              className="w-25 md:w-30 text-sm md:text-md cursor-pointer rounded-3xl"
+              className="text-sm cursor-pointer w-25 md:w-30 md:text-md rounded-3xl"
             >
-              Konfirm
+              Bayar
             </Button>
           </div>
         </ModalFooter>
