@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import HeaderBar from "../components/HeaderBar";
 import CardTopup from "../components/CardTopup";
 import { Button, Card, Checkbox, Label, TextInput } from "flowbite-react";
@@ -8,9 +8,8 @@ import FooterUniversal from "../components/FooterUniversal";
 import Navbar from "../components/NavBar";
 
 const Topup_ml = () => {
-  // const [selectedPayment, setSelectedPayment] = useState("QRIS");
   const [selectedTopup, setSelectedTopup] = useState(null);
-  const [snapToken, setSnapToken] = useState(""); 
+  const [snapToken, setSnapToken] = useState("");
   const [waNumber, setWaNumber] = useState("");
   const [openModal, setOpenModal] = useState(false);
   const [userId, setUserId] = useState("");
@@ -19,99 +18,116 @@ const Topup_ml = () => {
   const [formError, setFormError] = useState(false);
   const [userIdError, setUserIdError] = useState("");
   const [zoneIdError, setZoneIdError] = useState("");
+  const [nicknameError, setNicknameError] = useState("");
   const step2Ref = useRef(null);
 
   const handleBuyClick = async () => {
-  setUserIdError("");
-  setZoneIdError("");
+    setUserIdError("");
+    setZoneIdError("");
+    setNicknameError("");
 
-  if (!userId || !zoneId) {
-    setFormError(true);
-    step2Ref.current.scrollIntoView({ behavior: "smooth" });
-    return;
-  }
-
-  if (userId.length !== 9) {
-    setFormError(false);
-    setUserIdError("*Format ID salah. Isikan sesuai format yang benar.");
-    step2Ref.current.scrollIntoView({ behavior: "smooth" });
-    return;
-  }
-
-  if (zoneId.length !== 4) {
-    setFormError(false);
-    setZoneIdError("*Format ID salah. Isikan sesuai format yang benar.");
-    step2Ref.current.scrollIntoView({ behavior: "smooth" });
-    return;
-  }
-
-  setFormError(false);
-
-  try {
-    const response = await fetch("http://localhost:5000/api/payment/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        userId,
-        zoneId,
-        waNumber,
-        selectedTopup,
-      }),
-    });
-
-    const data = await response.json();
-
-    if (data.token) {
-      setSnapToken(data.token);     // ✅ simpan token
-      await handleLookup();         // optional: ambil nickname dummy
-      setOpenModal(true);           // ✅ buka modal konfirmasi
-    } else {
-      alert("Gagal memproses transaksi. Silakan coba lagi.");
+    // Validasi input User ID dan Zone ID
+    if (!userId || !zoneId) {
+      setFormError(true);
+      step2Ref.current.scrollIntoView({ behavior: "smooth" });
+      return;
     }
-  } catch (error) {
-    console.error("Error saat memproses pembayaran:", error);
-    alert("Terjadi kesalahan saat menghubungkan ke server.");
-  }
-};
 
-  const handleLookup = async () => {
-    if (!userId || !zoneId) return;
+    if (userId.length !== 9) {
+      setFormError(false);
+      setUserIdError("*Format ID salah. Isikan sesuai format yang benar.");
+      step2Ref.current.scrollIntoView({ behavior: "smooth" });
+      return;
+    }
 
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const dummyNicknames = [
-          "ZilongHero",
-          "MageMaster",
-          "AldousGod",
-          "MLKing",
-        ];
-        const randomNickname =
-          dummyNicknames[Math.floor(Math.random() * dummyNicknames.length)];
-        setNickname(randomNickname);
-        resolve();
-      }, 300);
-    });
+    if (zoneId.length !== 4) {
+      setFormError(false);
+      setZoneIdError("*Format ID salah. Isikan sesuai format yang benar.");
+      step2Ref.current.scrollIntoView({ behavior: "smooth" });
+      return;
+    }
+
+    // Tunggu pengecekan nickname dan jika ada error, beri pesan
+    if (nicknameError) {
+      setFormError(true); // Set error jika nickname tidak ditemukan
+      step2Ref.current.scrollIntoView({ behavior: "smooth" });
+      return;
+    }
+
+    setFormError(false);
+
+    try {
+      const response = await fetch("http://localhost:5000/api/payment/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId,
+          zoneId,
+          waNumber,
+          selectedTopup,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.token) {
+        setSnapToken(data.token); // ✅ simpan token
+        setOpenModal(true); // ✅ buka modal konfirmasi setelah nickname berhasil
+      } else {
+        alert("Gagal memproses transaksi. Silakan coba lagi.");
+      }
+    } catch (error) {
+      console.error("Error saat memproses pembayaran:", error);
+      alert("Terjadi kesalahan saat menghubungkan ke server.");
+    }
   };
 
-  // const paymentImages = {
-  //   QRIS: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Logo_QRIS.svg/2560px-Logo_QRIS.svg.png",
-  //   DANA: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Logo_dana_blue.svg/1200px-Logo_dana_blue.svg.png",
-  //   GOPAY:
-  //     "https://antinomi.org/wp-content/uploads/2022/03/logo-gopay-vector.png",
-  //   MANDIRI:
-  //     "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Bank_Mandiri_logo_2016.svg/2560px-Bank_Mandiri_logo_2016.svg.png",
-  // };
+  const handleLookup = useCallback(async () => {
+    if (!userId || !zoneId) return;
+
+    try {
+      const response = await fetch(
+        `https://api.isan.eu.org/nickname/ml?id=${userId}&zone=${zoneId}`
+      );
+      const data = await response.json();
+
+      if (data.success && data.name) {
+        setNickname(data.name); // Simpan nickname jika ditemukan
+        setNicknameError(""); // Reset error
+      } else {
+        setNickname(""); // Set nickname kosong
+        setNicknameError("*Nickname tidak ditemukan"); // Set error message jika nickname tidak ditemukan
+      }
+    } catch (error) {
+      console.error("Error saat mengambil data user:", error);
+      setNickname(""); // Set nickname kosong jika error
+      setNicknameError("Gagal mengambil data");
+    }
+  }, [userId, zoneId]); // Memastikan handleLookup hanya berubah ketika userId dan zoneId berubah
 
   useEffect(() => {
     document.title = "Top Up Mobile Legends | Paper Fires Store";
   }, []);
 
-  return (
+  useEffect(() => {
+    if (userId && zoneId) {
+      handleLookup();
+    }
+  }, [userId, zoneId, handleLookup]);
 
+  useEffect(() => {
+    // Reset nicknameError and nickname if userId or zoneId is empty
+    if (!userId || !zoneId) {
+      setNicknameError("");
+      setNickname("");
+    }
+  }, [userId, zoneId]);
+
+  return (
     <div className="w-full bg-gray-800">
-      <Navbar/>
+      <Navbar />
       <div className="flex flex-col gap-5 px-2 md:px-15 md:gap-10">
         {/* Banner */}
         <div className="relative flex justify-center w-full mt-10 md:w-full">
@@ -180,6 +196,7 @@ const Topup_ml = () => {
                       />
                     </div>
                   </div>
+
                   {formError && (
                     <p className="text-xs text-red-500">
                       *User ID dan Zone ID harus diisi.
@@ -191,6 +208,15 @@ const Topup_ml = () => {
                   {zoneIdError && (
                     <p className="text-xs text-red-500">{zoneIdError}</p>
                   )}
+
+                  {/* Menampilkan Nickname */}
+                  {nicknameError ? (
+                    <p className="text-xs text-red-500">{nicknameError}</p> // Menampilkan pesan error jika ada
+                  ) : (
+                    nickname && (
+                      <p className="text-xs text-white">Nickname: {nickname}</p>
+                    ) // Menampilkan nickname jika tidak ada error
+                  )}
                   <p className="text-xs text-white">
                     Untuk menemukan ID Anda, klik pada ikon karakter. User ID
                     tercantum di bawah nama karakter Anda. Contoh:
@@ -200,23 +226,7 @@ const Topup_ml = () => {
               </Card>
             </div>
 
-            {/* Step 3
-            <div className="flex flex-col items-center w-full gap-5 rounded-xl">
-              <HeaderBar step={3} label={"Pilih Pembayaran"} width={"w-full"} />
-              <div className="grid w-full grid-cols-2 gap-4 md:grid-cols-2">
-                {["QRIS", "DANA", "GOPAY", "MANDIRI"].map((method) => (
-                  <CardPayment
-                    key={method}
-                    img={paymentImages[method]}
-                    title={method}
-                    active={selectedPayment === method}
-                    onClick={() => setSelectedPayment(method)}
-                  />
-                ))}
-              </div>
-            </div> */}
-
-            {/* Step 4 */}
+            {/* Step 3 */}
             <div className="flex flex-col items-center w-full gap-5 rounded-xl">
               <HeaderBar step={3} label={"Beli"} width={"w-full"} />
               <Card className="!bg-purple-900 !border-purple-900 w-full">
@@ -266,6 +276,7 @@ const Topup_ml = () => {
                     type="submit"
                     className="self-end cursor-pointer h-9 w-35 rounded-3xl text-md"
                     onClick={handleBuyClick}
+                    disabled={nicknameError !== ""}
                   >
                     Beli
                   </Button>
@@ -275,23 +286,25 @@ const Topup_ml = () => {
           </div>
         </div>
       </div>
-      <FooterUniversal/>
+      <FooterUniversal />
 
       {/* Modal Detail Pesanan */}
-      <ModalDetailPesanan
-        open={openModal}
-        onClose={() => setOpenModal(false)}
-        data={{
-          selectedTopup,
-          userId,
-          zoneId,
-          waNumber,
-        }}
-        userId={userId}
-        zoneId={zoneId}
-        nickname={nickname}
-        snapToken={snapToken}
-      />
+      {!nicknameError && (
+        <ModalDetailPesanan
+          open={openModal}
+          onClose={() => setOpenModal(false)}
+          data={{
+            selectedTopup,
+            userId,
+            zoneId,
+            waNumber,
+          }}
+          userId={userId}
+          zoneId={zoneId}
+          nickname={nickname}
+          snapToken={snapToken}
+        />
+      )}
     </div>
   );
 };
