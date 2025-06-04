@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef, useCallback } from "react";
 import HeaderBar from "../components/HeaderBar";
 import CardTopup from "../components/CardTopup";
 import { Button, Card, Checkbox, Label, TextInput } from "flowbite-react";
-import CardPayment from "../components/CardPayment";
 import ModalDetailPesanan from "../components/ModalDetailPesanan";
 import FooterUniversal from "../components/FooterUniversal";
 import Navbar from "../components/NavBar";
@@ -21,6 +20,7 @@ const Topup_ml = () => {
   const [nicknameError, setNicknameError] = useState("");
   const step2Ref = useRef(null);
 
+  // Fungsi untuk menangani klik beli
   const handleBuyClick = async () => {
     setUserIdError("");
     setZoneIdError("");
@@ -74,6 +74,10 @@ const Topup_ml = () => {
 
       if (data.token) {
         setSnapToken(data.token); // ✅ simpan token
+
+        // Memeriksa status transaksi setelah mendapatkan orderId
+        checkTransactionStatus(data.order_id); // Panggil fungsi untuk cek status transaksi setelah pemesanan dibuat
+
         setOpenModal(true); // ✅ buka modal konfirmasi setelah nickname berhasil
       } else {
         alert("Gagal memproses transaksi. Silakan coba lagi.");
@@ -84,6 +88,41 @@ const Topup_ml = () => {
     }
   };
 
+  // Fungsi untuk mengecek status transaksi
+  const checkTransactionStatus = async (orderId) => {
+    console.log("Checking status for orderId:", orderId); // Add logging
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/payment/status/${orderId}`
+      );
+      if (!response.ok) {
+        throw new Error(
+          `Failed to fetch transaction status: ${response.statusText}`
+        );
+      }
+      const data = await response.json();
+
+      // Log status transaksi dari backend
+      console.log("Transaction status from backend:", data);
+
+      if (data.status === "settlement") {
+        console.log("Pembayaran berhasil");
+        // Lakukan update status di Firebase atau UI
+      } else {
+        console.log("Status pembayaran:", data.status);
+      }
+    } catch (error) {
+      console.error("Error checking transaction status:", error);
+    }
+  };
+
+  // Fungsi untuk menangani penutupan modal dan memeriksa status transaksi
+  const handleModalClose = async () => {
+    // Hapus pemanggilan checkTransactionStatus di sini
+    setOpenModal(false); // Menutup modal setelah transaksi selesai atau pengecekan dilakukan
+  };
+
+  // Fungsi untuk lookup nickname berdasarkan userId dan zoneId
   const handleLookup = useCallback(async () => {
     if (!userId || !zoneId) return;
 
@@ -107,18 +146,20 @@ const Topup_ml = () => {
     }
   }, [userId, zoneId]); // Memastikan handleLookup hanya berubah ketika userId dan zoneId berubah
 
+  // Mengubah document title
   useEffect(() => {
     document.title = "Top Up Mobile Legends | Paper Fires Store";
   }, []);
 
+  // Memanggil handleLookup setiap kali userId dan zoneId berubah
   useEffect(() => {
     if (userId && zoneId) {
       handleLookup();
     }
   }, [userId, zoneId, handleLookup]);
 
+  // Reset error dan nickname jika userId atau zoneId kosong
   useEffect(() => {
-    // Reset nicknameError and nickname if userId or zoneId is empty
     if (!userId || !zoneId) {
       setNicknameError("");
       setNickname("");
@@ -214,7 +255,10 @@ const Topup_ml = () => {
                     <p className="text-xs text-red-500">{nicknameError}</p> // Menampilkan pesan error jika ada
                   ) : (
                     nickname && (
-                      <p className="text-xs text-white">Nickname: {nickname}</p>
+                      <p className="text-xs text-white">
+                        Nickname:{" "}
+                        <span className="font-semibold">{nickname}</span>
+                      </p>
                     ) // Menampilkan nickname jika tidak ada error
                   )}
                   <p className="text-xs text-white">
@@ -275,7 +319,6 @@ const Topup_ml = () => {
                   <Button
                     type="submit"
                     className="self-end cursor-pointer h-9 w-35 rounded-3xl text-md"
-                    onClick={handleBuyClick}
                     disabled={nicknameError !== ""}
                   >
                     Beli
@@ -289,10 +332,10 @@ const Topup_ml = () => {
       <FooterUniversal />
 
       {/* Modal Detail Pesanan */}
-      {!nicknameError && (
+      {openModal && !nicknameError && (
         <ModalDetailPesanan
           open={openModal}
-          onClose={() => setOpenModal(false)}
+          onClose={handleModalClose}
           data={{
             selectedTopup,
             userId,
