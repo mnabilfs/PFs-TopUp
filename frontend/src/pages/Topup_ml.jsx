@@ -5,6 +5,7 @@ import { Button, Card, Checkbox, Label, TextInput } from "flowbite-react";
 import ModalDetailPesanan from "../components/ModalDetailPesanan";
 import FooterUniversal from "../components/FooterUniversal";
 import Navbar from "../components/NavBar";
+import Banner from "../assets/BannerPfsStore.png";
 
 const Topup_ml = () => {
   const [selectedTopup, setSelectedTopup] = useState(null);
@@ -173,7 +174,7 @@ const Topup_ml = () => {
         {/* Banner */}
         <div className="relative flex justify-center w-full mt-10 md:w-full">
           <img
-            src="https://i.pinimg.com/736x/cd/54/ef/cd54efa2496b840ace4800f214708847.jpg"
+            src={Banner}
             alt="Banner Mobile Legends"
             className="object-cover object-center w-full h-auto md:h-[490px] md:w-[1470px] rounded-2xl"
           />

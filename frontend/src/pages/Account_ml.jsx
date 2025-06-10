@@ -3,7 +3,7 @@ import Navbar from "../components/NavBar";
 import FooterUniversal from "../components/FooterUniversal";
 
 const ProductDetail = () => {
-  const sellerPhoneNumber = "6281234567890"; // ganti dengan nomor penjual asli
+  const sellerPhoneNumber = "6289527400005";
   const whatsappLink = `https://wa.me/${sellerPhoneNumber}`;
 
   useEffect(() => {
