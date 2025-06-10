@@ -139,7 +139,7 @@ const FooterHome = () => {
             <img
               src={Banner}
               alt="Banner Mobile Legends"
-              className="object-cover object-center w-full h-auto md:h-[490px] md:w-[1470px] rounded-md"
+              className="object-cover object-center w-full h-auto md:h-[150px] rounded-md"
             />
         </div>
       </div>

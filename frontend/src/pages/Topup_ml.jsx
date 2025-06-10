@@ -176,7 +176,7 @@ const Topup_ml = () => {
           <img
             src={Banner}
             alt="Banner Mobile Legends"
-            className="object-cover object-center w-full h-auto md:h-[490px] md:w-[1470px] rounded-2xl"
+            className="object-cover object-center w-full h-auto md:h-[530px] md:w-[1470px] rounded-2xl"
           />
         </div>
 
