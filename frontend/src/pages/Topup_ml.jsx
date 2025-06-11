@@ -58,7 +58,7 @@ const Topup_ml = () => {
     setFormError(false);
 
     try {
-      const response = await fetch("http://localhost:5000/api/payment/create", {
+      const response = await fetch("/api/payment/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -94,7 +94,7 @@ const Topup_ml = () => {
     console.log("Checking status for orderId:", orderId); // Add logging
     try {
       const response = await fetch(
-        `http://localhost:5000/api/payment/status/${orderId}`
+        `/api/payment/status/${orderId}`
       );
       if (!response.ok) {
         throw new Error(
