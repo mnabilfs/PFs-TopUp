@@ -1,4 +1,5 @@
 import "./App.css";
+import { Analytics } from "@vercel/analytics/react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Topup_ml from "./pages/Topup_ml";
@@ -18,6 +19,7 @@ function App() {
       <Route path="/payment/success/:orderId" element={<PaymentSuccess />}/>
       <Route path="*" element={<NotFound />} />
     </Routes>
+    <Analytics />
     </BrowserRouter>
 
     </>
