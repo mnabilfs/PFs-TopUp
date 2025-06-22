@@ -20,6 +20,7 @@ const Topup_ml = () => {
   const [zoneIdError, setZoneIdError] = useState("");
   const [nicknameError, setNicknameError] = useState("");
   const step2Ref = useRef(null);
+  const [orderId, setOrderId] = useState(null);
 
   // Fungsi untuk menangani klik beli
   const handleBuyClick = async () => {
@@ -58,7 +59,7 @@ const Topup_ml = () => {
     setFormError(false);
 
     try {
-      const response = await fetch("/api/payment/create", {
+      const response = await fetch("http://localhost:5000/api/payment/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -77,7 +78,8 @@ const Topup_ml = () => {
         setSnapToken(data.token); // ✅ simpan token
 
         // Memeriksa status transaksi setelah mendapatkan orderId
-        checkTransactionStatus(data.order_id); // Panggil fungsi untuk cek status transaksi setelah pemesanan dibuat
+        // checkTransactionStatus(data.order_id); // Panggil fungsi untuk cek status transaksi setelah pemesanan dibuat
+        setOrderId(data.order_id); // ✅ Simpan order_id ke state
 
         setOpenModal(true); // ✅ buka modal konfirmasi setelah nickname berhasil
       } else {
@@ -91,36 +93,43 @@ const Topup_ml = () => {
 
   // Fungsi untuk mengecek status transaksi
   const checkTransactionStatus = async (orderId) => {
-    console.log("Checking status for orderId:", orderId); // Add logging
+    console.log("Checking status for orderId:", orderId);
     try {
-      const response = await fetch(
-        `/api/payment/status/${orderId}`
-      );
+      const response = await fetch(`http://localhost:5000/api/payment/status/${orderId}`); // pakai relative URL
       if (!response.ok) {
-        throw new Error(
-          `Failed to fetch transaction status: ${response.statusText}`
-        );
+        throw new Error(`Failed to fetch transaction status: ${response.statusText}`);
       }
-      const data = await response.json();
-
-      // Log status transaksi dari backend
-      console.log("Transaction status from backend:", data);
-
-      if (data.status === "settlement") {
+  
+      const result = await response.json();
+      const transactionStatus = result.status || result.data?.transaction_status;
+  
+      console.log("Transaction status from backend:", transactionStatus);
+  
+      if (transactionStatus === "settlement") {
         console.log("Pembayaran berhasil");
-        // Lakukan update status di Firebase atau UI
+        // bisa update Firebase/UI
       } else {
-        console.log("Status pembayaran:", data.status);
+        console.log("Status pembayaran:", transactionStatus);
       }
+  
+      return transactionStatus; // optional return
     } catch (error) {
       console.error("Error checking transaction status:", error);
+      return null; // return null atau false jika gagal
     }
-  };
+  };  
+  
 
   // Fungsi untuk menangani penutupan modal dan memeriksa status transaksi
   const handleModalClose = async () => {
-    // Hapus pemanggilan checkTransactionStatus di sini
-    setOpenModal(false); // Menutup modal setelah transaksi selesai atau pengecekan dilakukan
+    if (orderId) {
+      await checkTransactionStatus(orderId); // ✅ Panggil status berdasarkan orderId dari state
+      console.log("Checking status for orderId:", orderId);
+    } else {
+      console.warn("⚠ Tidak ada orderId yang tersedia.");
+    }
+  
+    setOpenModal(false); // Menutup modal
   };
 
   // Fungsi untuk lookup nickname berdasarkan userId dan zoneId
