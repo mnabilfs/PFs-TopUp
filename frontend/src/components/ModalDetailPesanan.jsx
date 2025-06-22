@@ -18,31 +18,31 @@ const ModalDetailPesanan = ({
   zoneId,
   snapToken,
 }) => {
-  const { selectedTopup} = data;
-  const tax = selectedTopup ? selectedTopup.price * 0.12 : 0;
-  const total = selectedTopup ? selectedTopup.price + tax : 0;
+  const { selectedTopup } = data;
+  const grossAmount = selectedTopup ? selectedTopup.price * 1.11 : 0;
+  const tax = Math.round(grossAmount - grossAmount / 1.11);
+  const taxableAmount = grossAmount - tax;
 
   const handleKonfirmasi = () => {
-  if (snapToken) {
-    window.snap.pay(snapToken, {
-      onSuccess: function(result) {
-        console.log("Success:", result);
-      },
-      onPending: function(result) {
-        console.log("Pending:", result);
-      },
-      onError: function(result) {
-        console.log("Error:", result);
-      },
-      onClose: function() {
-        console.log("Popup ditutup.");
-      },
-    });
-  } else {
-    alert("Token tidak tersedia.");
-  }
-};
-
+    if (snapToken) {
+      window.snap.pay(snapToken, {
+        onSuccess: function (result) {
+          console.log("Success:", result);
+        },
+        onPending: function (result) {
+          console.log("Pending:", result);
+        },
+        onError: function (result) {
+          console.log("Error:", result);
+        },
+        onClose: function () {
+          console.log("Popup ditutup.");
+        },
+      });
+    } else {
+      alert("Token tidak tersedia.");
+    }
+  };
 
   return (
     <Modal
@@ -89,10 +89,12 @@ const ModalDetailPesanan = ({
               </div>
               <div className="flex justify-between px-2 pb-2 text-xs text-black border-b border-gray-500/30 md:text-md">
                 <span>Harga:</span>
-                <span className="font-semibold">{numberToRupiah(selectedTopup?.price)}</span>
+                <span className="font-semibold">
+                  {numberToRupiah(taxableAmount)}
+                </span>
               </div>
               <div className="flex justify-between px-2 pt-2 -mt-2 text-xs text-black md:text-md">
-                <span>Pajak (12%):</span>
+                <span>Pajak (11%):</span>
                 <span className="font-semibold">{numberToRupiah(tax)}</span>
               </div>
             </div>
@@ -105,7 +107,9 @@ const ModalDetailPesanan = ({
           <div className="flex items-center justify-between w-full">
             <div className="flex flex-col justify-center gap-1">
               <p className="text-sm font-light md:text-md">Total Pembayaran</p>
-              <h1 className="font-semibold text-md md:text-lg">{numberToRupiah(total)}</h1>
+              <h1 className="font-semibold text-md md:text-lg">
+                {numberToRupiah(grossAmount)}
+              </h1>
             </div>
             <Button
               onClick={handleKonfirmasi}

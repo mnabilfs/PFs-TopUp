@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Card, Button } from "flowbite-react";
 import Navbar from "../components/NavBar";
@@ -10,24 +10,60 @@ import {
   AccordionPanel,
   AccordionTitle,
 } from "flowbite-react";
+import { numberToRupiah } from "../utils/number-to-rupiah";
 
 const PaymentSuccess = () => {
+  const [transactionData, setTransactionData] = useState(null);
   const navigate = useNavigate();
   const { orderId } = useParams();
+
+  const getPaymentLabel = (data) => {
+    if (!data) return "-";
+    if (data.payment_type === "echannel") return "Mandiri Virtual Account";
+    if (data.payment_type === "bank_transfer") {
+      return `${data.va_numbers?.[0]?.bank?.toUpperCase()} Virtual Account`;
+    }
+    if (data.payment_type === "qris") return "QRIS";
+    return data.payment_type.toUpperCase();
+  };
 
   useEffect(() => {
     console.log("Order ID:", orderId);
   }, [orderId]);
 
+  useEffect(() => {
+    document.title = "Payment Success Topup Mobile Legends";
+  }, []);
+
+  useEffect(() => {
+    const fetchTransaction = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:5000/api/payment/status/${orderId}`
+        );
+        const result = await response.json();
+        setTransactionData(result.data);
+        console.log("✅ Data transaksi:", result.data);
+      } catch (error) {
+        console.error("❌ Gagal ambil status transaksi:", error);
+      }
+    };
+
+    if (orderId) fetchTransaction();
+  }, [orderId]);
+
+  const grossAmount = Number(transactionData?.gross_amount || 0);
+  const tax = Math.round(grossAmount - grossAmount / 1.11);
+  const taxableAmount = grossAmount - tax;
+
   return (
     <>
       <div className="w-full min-h-screen bg-purple-900">
         <Navbar />
-        {/* Section 1 */}
-        <div className="relative flex flex-col items-center justify-center w-full gap-2 text-center text-white bg-green-500 py-30">
+        <div className="relative flex flex-col items-center justify-center w-full gap-2 px-4 text-center text-white bg-green-500 py-15 md:py-16 lg:py-25">
           <div className="animate-spin">
             <svg
-              className="w-12 h-12 text-yellow-300"
+              className="w-10 h-10 text-yellow-300 md:w-12 md:h-12"
               fill="none"
               viewBox="0 0 24 24"
             >
@@ -47,18 +83,18 @@ const PaymentSuccess = () => {
             </svg>
           </div>
 
-          <h1 className="mb-2 text-2xl font-extrabold tracking-wide text-purple-900 uppercase">
+          <h1 className="mb-2 text-xl font-extrabold tracking-wide text-purple-900 uppercase md:text-2xl lg:text-3xl">
             ORDER ITEM BERHASIL
           </h1>
 
-          <p className="text-sm text-white">
+          <p className="max-w-lg text-sm text-white md:text-base lg:text-lg">
             Top up sudah ditambahkan ke akun Mobile Legends: Bang Bang Anda.
           </p>
         </div>
 
-        <div className="flex flex-col items-center justify-center py-4 text-sm font-medium text-white px-auto bg-green-400/80">
-          <p className="mb-2">
-            Diamonds telah ditambahkan ke akun Mobile Legends anda. Jika masih
+        <div className="flex flex-col items-center justify-center px-4 py-4 text-xs font-medium text-center text-white md:px-4 lg:px-4 md:text-sm bg-green-400/80">
+          <p className="max-w-5xl mb-2">
+            Diamonds telah ditambahkan ke akun Mobile Legends Anda. Jika masih
             belum masuk, mohon re-login dan cek kembali.
           </p>
           <p>
@@ -73,7 +109,6 @@ const PaymentSuccess = () => {
           </p>
         </div>
 
-        {/* Section 2 */}
         <div className="flex flex-col items-center gap-6 px-4 pt-10 md:px-10">
           <h1 className="text-xl font-bold tracking-tight text-center text-white md:text-3xl">
             RINGKASAN PEMESANAN
@@ -83,7 +118,9 @@ const PaymentSuccess = () => {
             <h1 className="text-sm text-gray-900 md:text-base">
               Pembelian Anda
             </h1>
-            <p className="text-xl font-semibold text-gray-700">5 Diamond</p>
+            <p className="text-xl font-semibold text-gray-700">
+              {transactionData?.item_name || "-"}
+            </p>
 
             <div className="grid grid-cols-2 mt-1 text-sm gap-y-2">
               <div className="flex flex-col gap-1">
@@ -93,54 +130,57 @@ const PaymentSuccess = () => {
               </div>
               <div className="flex flex-col gap-1 font-medium text-right">
                 <p>Mobile Legends</p>
-                <p>QRIS</p>
-                <p className="text-cyan-600">Rp. 1.579</p>
+                <p>{getPaymentLabel(transactionData)}</p>
+                <p className="text-cyan-600">
+                  {transactionData ? numberToRupiah(grossAmount) : "-"}
+                </p>
               </div>
             </div>
           </Card>
 
           <div className="w-full max-w-xl mb-8 space-y-4 text-white/90 bg-[#3B0073] p-7 md:p-10 rounded-xl flex flex-col justify-center">
             <h2 className="mb-8 text-lg font-semibold">Rincian Tagihan</h2>
-            <div className="flex flex-col gap-2 ">
+            <div className="flex flex-col gap-2">
               <p className="font-semibold">Nomor Tagihan</p>
-              <p className="text-sm break-words ">{orderId}</p>
+              <p className="text-sm break-words">{transactionData?.order_id}</p>
             </div>
-            <div className="flex flex-col gap-2 ">
+            <div className="flex flex-col gap-2">
               <p className="font-semibold">Tanggal Pembayaran</p>
-              <p className="text-sm text-white/90 ">24/03/2025 10.06 PM</p>
+              <p className="text-sm text-white/90">
+                {transactionData?.transaction_time
+                  ? new Date(transactionData.transaction_time).toLocaleString(
+                      "id-ID"
+                    )
+                  : "-"}
+              </p>
             </div>
-            <div className="flex flex-col gap-2 ">
+            <div className="flex flex-col gap-2">
               <p className="font-semibold">Item</p>
-              <p className="text-sm text-white/90 ">5 Diamonds</p>
+              <p className="text-sm text-white/90">
+                {transactionData?.item_name || "-"}
+              </p>
             </div>
             <div className="w-full max-w-lg p-2 text-white md:p-5 rounded-xl">
               <div className="grid grid-cols-2 mb-4 text-sm font-semibold">
                 <p>Kesatuan</p>
                 <p className="text-right">Nominal</p>
               </div>
-
               <div className="grid grid-cols-2 mb-6 space-y-2 text-sm text-white/90">
-                <p>Nilai kena pajak</p>
-                <p className="text-right">Rp. 1.423</p>
-
+                <p>Harga</p>
+                <p className="text-right">{numberToRupiah(taxableAmount)}</p>
                 <p>Tarif pajak</p>
-                <p className="text-right">11.0 %</p>
-
+                <p className="text-right">11 %</p>
                 <p>Nominal pajak</p>
-                <p className="text-right">Rp. 156</p>
+                <p className="text-right">{numberToRupiah(tax)}</p>
               </div>
-
               <hr className="mb-2 border-white/30" />
-
               <div className="flex justify-between text-sm font-semibold text-white">
                 <p>Jumlah Pembayaran</p>
-                <p className="text-cyan-300">Rp. 1.579</p>
+                <p className="text-cyan-300">{numberToRupiah(grossAmount)}</p>
               </div>
-
               <hr className="mt-2 border-white/30" />
             </div>
             <Button
-              type="submit"
               onClick={() => navigate("/Topup_ml")}
               className="text-sm cursor-pointer rounded-3xl md:text-md"
             >
