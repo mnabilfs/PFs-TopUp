@@ -8,6 +8,7 @@ import {
   Label,
 } from "flowbite-react";
 import { numberToRupiah } from "../utils/number-to-rupiah";
+import { useNavigate } from "react-router-dom"; // Impor useNavigate
 
 const ModalDetailPesanan = ({
   open,
@@ -23,11 +24,22 @@ const ModalDetailPesanan = ({
   const tax = Math.round(grossAmount - grossAmount / 1.11);
   const taxableAmount = grossAmount - tax;
 
+    const navigate = useNavigate(); // Inisialisasi navigate
+
   const handleKonfirmasi = () => {
     if (snapToken) {
       window.snap.pay(snapToken, {
-        onSuccess: function (result) {
+        onSuccess: async function (result) {
           console.log("Success:", result);
+           const orderId = result.order_id; // Dapatkan orderId dari hasil response
+
+          // Pengecekan status transaksi setelah pembayaran berhasil
+          const transactionStatus = await checkTransactionStatus(orderId);
+
+          // Jika status transaksi 'settlement', arahkan ke halaman PaymentSuccess
+          if (transactionStatus === "settlement") {
+            navigate(`/payment/success/${orderId}`); // Mengarahkan ke halaman PaymentSuccess
+          }
         },
         onPending: function (result) {
           console.log("Pending:", result);
@@ -41,6 +53,23 @@ const ModalDetailPesanan = ({
       });
     } else {
       alert("Token tidak tersedia.");
+    }
+  };
+
+    // Fungsi untuk mengecek status transaksi
+  const checkTransactionStatus = async (orderId) => {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/payment/status/${orderId}`
+      );
+      const result = await response.json();
+      const transactionStatus = result.status || result.data?.transaction_status;
+
+      console.log("Transaction status from backend:", transactionStatus);
+      return transactionStatus; // Mengembalikan status transaksi
+    } catch (error) {
+      console.error("Error checking transaction status:", error);
+      return null; // Mengembalikan null jika terjadi error
     }
   };
 
