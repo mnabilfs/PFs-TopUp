@@ -9,6 +9,7 @@ import {
 } from "flowbite-react";
 import { numberToRupiah } from "../utils/number-to-rupiah";
 import { useNavigate } from "react-router-dom"; // Impor useNavigate
+import md5 from "md5";
 
 const ModalDetailPesanan = ({
   open,
@@ -38,7 +39,8 @@ const ModalDetailPesanan = ({
 
           // Jika status transaksi 'settlement', arahkan ke halaman PaymentSuccess
           if (transactionStatus === "settlement") {
-            navigate(`/payment/success/${orderId}`); // Mengarahkan ke halaman PaymentSuccess
+            await handleTopupAfterPayment(orderId);
+
           }
         },
         onPending: function (result) {
@@ -53,6 +55,51 @@ const ModalDetailPesanan = ({
       });
     } else {
       alert("Token tidak tersedia.");
+    }
+  };
+
+  // Fungsi Mengirimkan ke Merchant
+  const handleTopupAfterPayment = async (orderId) => {
+    const username = "081355788875";
+    const customer_id = `${userId}|${zoneId}`;
+    const ref_id = orderId;
+    const product_code = selectedTopup?.raw?.product_code; // pastikan ada field ini
+    const api_key = "3896861792b2e888CFM3"; // Ganti dengan API key dari IAK
+  
+    const sign = md5(username + api_key + ref_id);
+  
+    const payload = {
+      username,
+      customer_id,
+      ref_id,
+      product_code,
+      sign,
+    };
+  
+    try {
+      const response = await fetch("https://prepaid.iak.dev/api/top-up", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+  
+      const result = await response.json();
+      console.log("Top-up response:", result);
+  
+      // Tambahkan tindakan jika sukses
+      if (result.data && result.data.status === 1) {
+        // Berhasil
+        navigate(`/payment/success/${ref_id}`);
+      } else {
+        // Gagal, tampilkan pesan dari API
+        const message = result.data?.message || "Top-up gagal tanpa pesan.";
+        alert("Top-up gagal: " + message);
+      }
+    } catch (err) {
+      console.error("Top-up error:", err);
+      alert("Terjadi kesalahan saat melakukan top-up.");
     }
   };
 
