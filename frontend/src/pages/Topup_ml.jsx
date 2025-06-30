@@ -35,7 +35,7 @@ const Topup_ml = () => {
       return;
     }
 
-    if (userId.length !== 9) {
+    if (userId.length < 8) {
       setFormError(false);
       setUserIdError("*Format ID salah. Isikan sesuai format yang benar.");
       step2Ref.current.scrollIntoView({ behavior: "smooth" });
