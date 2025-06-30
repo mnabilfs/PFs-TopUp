@@ -64,7 +64,7 @@ const ModalDetailPesanan = ({
     const customer_id = `${userId}|${zoneId}`;
     const ref_id = orderId;
     const product_code = selectedTopup?.raw?.product_code; // pastikan ada field ini
-    const api_key = "3896861792b2e888CFM3"; // Ganti dengan API key dari IAK
+    const api_key = "95768622cbd16ce1d7sp"; // Ganti dengan API key dari IAK
   
     const sign = md5(username + api_key + ref_id);
   
