@@ -25,14 +25,14 @@ const ModalDetailPesanan = ({
   const tax = Math.round(grossAmount - grossAmount / 1.11);
   const taxableAmount = grossAmount - tax;
 
-    const navigate = useNavigate(); // Inisialisasi navigate
+  const navigate = useNavigate(); // Inisialisasi navigate
 
   const handleKonfirmasi = () => {
     if (snapToken) {
       window.snap.pay(snapToken, {
         onSuccess: async function (result) {
           console.log("Success:", result);
-           const orderId = result.order_id; // Dapatkan orderId dari hasil response
+          const orderId = result.order_id; // Dapatkan orderId dari hasil response
 
           // Pengecekan status transaksi setelah pembayaran berhasil
           const transactionStatus = await checkTransactionStatus(orderId);
@@ -40,7 +40,6 @@ const ModalDetailPesanan = ({
           // Jika status transaksi 'settlement', arahkan ke halaman PaymentSuccess
           if (transactionStatus === "settlement") {
             await handleTopupAfterPayment(orderId);
-
           }
         },
         onPending: function (result) {
@@ -60,14 +59,16 @@ const ModalDetailPesanan = ({
 
   // Fungsi Mengirimkan ke Merchant
   const handleTopupAfterPayment = async (orderId) => {
-    const username = "081355788875";
+    const username = import.meta.env.VITE_IAK_USERNAME;
     const customer_id = `${userId}|${zoneId}`;
     const ref_id = orderId;
     const product_code = selectedTopup?.raw?.product_code; // pastikan ada field ini
-    const api_key = "95768622cbd16ce1d7sp"; // Ganti dengan API key dari IAK
-  
+    const api_key = import.meta.env.VITE_IAK_API_KEY; // Ganti dengan API key dari IAK
+    console.log(api_key);
+    console.log(username);
+
     const sign = md5(username + api_key + ref_id);
-  
+
     const payload = {
       username,
       customer_id,
@@ -75,7 +76,7 @@ const ModalDetailPesanan = ({
       product_code,
       sign,
     };
-  
+
     try {
       const response = await fetch("https://prepaid.iak.dev/api/top-up", {
         method: "POST",
@@ -84,10 +85,10 @@ const ModalDetailPesanan = ({
         },
         body: JSON.stringify(payload),
       });
-  
+
       const result = await response.json();
       console.log("Top-up response:", result);
-  
+
       // Tambahkan tindakan jika sukses
       if (result.data && result.data.status === 1) {
         // Berhasil
@@ -103,14 +104,15 @@ const ModalDetailPesanan = ({
     }
   };
 
-    // Fungsi untuk mengecek status transaksi
+  // Fungsi untuk mengecek status transaksi
   const checkTransactionStatus = async (orderId) => {
     try {
       const response = await fetch(
         `http://localhost:5000/api/payment/status/${orderId}`
       );
       const result = await response.json();
-      const transactionStatus = result.status || result.data?.transaction_status;
+      const transactionStatus =
+        result.status || result.data?.transaction_status;
 
       console.log("Transaction status from backend:", transactionStatus);
       return transactionStatus; // Mengembalikan status transaksi
