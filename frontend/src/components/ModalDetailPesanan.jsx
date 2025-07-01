@@ -9,7 +9,6 @@ import {
 } from "flowbite-react";
 import { numberToRupiah } from "../utils/number-to-rupiah";
 import { useNavigate } from "react-router-dom"; // Impor useNavigate
-import md5 from "md5";
 
 const ModalDetailPesanan = ({
   open,
@@ -25,7 +24,7 @@ const ModalDetailPesanan = ({
   const tax = Math.round(grossAmount - grossAmount / 1.11);
   const taxableAmount = grossAmount - tax;
 
-    const navigate = useNavigate(); // Inisialisasi navigate
+  const navigate = useNavigate(); // Inisialisasi navigate
 
   const handleKonfirmasi = () => {
     if (snapToken) {
@@ -40,7 +39,6 @@ const ModalDetailPesanan = ({
           // Jika status transaksi 'settlement', arahkan ke halaman PaymentSuccess
           if (transactionStatus === "settlement") {
             await handleTopupAfterPayment(orderId);
-
           }
         },
         onPending: function (result) {
@@ -58,52 +56,65 @@ const ModalDetailPesanan = ({
     }
   };
 
-  // Fungsi Mengirimkan ke Merchant
   const handleTopupAfterPayment = async (orderId) => {
-    const username = "081355788875";
-    const customer_id = `${userId}|${zoneId}`;
-    const ref_id = orderId;
-    const product_code = selectedTopup?.raw?.product_code; // pastikan ada field ini
-    const api_key = "95768622cbd16ce1d7sp"; // Ganti dengan API key dari IAK
-  
-    const sign = md5(username + api_key + ref_id);
-  
-    const payload = {
-      username,
-      customer_id,
-      ref_id,
-      product_code,
-      sign,
-    };
-  
     try {
-      const response = await fetch("https://prepaid.iak.dev/api/top-up", {
+      // 1. Kirim permintaan topup ke backend
+      const topupResponse = await fetch("http://localhost:5000/api/payment/topup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          orderId,
+          userId,
+          zoneId,
+          product_code: selectedTopup?.raw?.product_code,
+        }),
       });
   
-      const result = await response.json();
-      console.log("Top-up response:", result);
+      const topupResult = await topupResponse.json();
   
-      // Tambahkan tindakan jika sukses
-      if (result.data && result.data.status === 1) {
-        // Berhasil
-        navigate(`/payment/success/${ref_id}`);
-      } else {
-        // Gagal, tampilkan pesan dari API
-        const message = result.data?.message || "Top-up gagal tanpa pesan.";
-        alert("Top-up gagal: " + message);
+      if (!topupResponse.ok) {
+        alert("Top-up gagal: " + (topupResult.message || "Tidak diketahui"));
+        return;
       }
+  
+      // 2. Mulai polling status setiap 3 detik
+      const maxAttempts = 10; // maksimal 10x percobaan (~30 detik)
+      let attempts = 0;
+      const interval = setInterval(async () => {
+        attempts++;
+  
+        const statusResponse = await fetch(`http://localhost:5000/api/payment/check-status/${orderId}`);
+        const statusResult = await statusResponse.json();
+        const status = statusResult?.data?.status;
+        const message = statusResult?.data?.message || "Tanpa pesan";
+  
+        console.log(`Percobaan ${attempts}: Status = ${status}`);
+  
+        if (status === 1) {
+          clearInterval(interval);
+          alert("Top-up berhasil: " + message);
+          navigate(`/payment/success/${orderId}`);
+        } else if (status === 2) {
+          clearInterval(interval);
+          alert("Top-up gagal: " + message);
+        } else if (attempts >= maxAttempts) {
+          clearInterval(interval);
+          alert("Top-up masih diproses, silakan cek kembali nanti.");
+          navigate(`/payment/pending/${orderId}`);
+        }
+  
+        // Jika status === 0 (PROCESS), lanjut polling
+      }, 3000);
     } catch (err) {
       console.error("Top-up error:", err);
-      alert("Terjadi kesalahan saat melakukan top-up.");
+      alert("Terjadi kesalahan saat top-up.");
     }
   };
+  
 
-    // Fungsi untuk mengecek status transaksi
+  // Fungsi untuk mengecek status transaksi
   const checkTransactionStatus = async (orderId) => {
     try {
       const response = await fetch(
