@@ -31,7 +31,7 @@ const ModalDetailPesanan = ({
       window.snap.pay(snapToken, {
         onSuccess: async function (result) {
           console.log("Success:", result);
-           const orderId = result.order_id; // Dapatkan orderId dari hasil response
+          const orderId = result.order_id; // Dapatkan orderId dari hasil response
 
           // Pengecekan status transaksi setelah pembayaran berhasil
           const transactionStatus = await checkTransactionStatus(orderId);
@@ -77,6 +77,7 @@ const ModalDetailPesanan = ({
       if (!topupResponse.ok) {
         alert("Top-up gagal: " + (topupResult.message || "Tidak diketahui"));
         return;
+
       }
   
       // 2. Mulai polling status setiap 3 detik
@@ -121,7 +122,8 @@ const ModalDetailPesanan = ({
         `http://localhost:5000/api/payment/status/${orderId}`
       );
       const result = await response.json();
-      const transactionStatus = result.status || result.data?.transaction_status;
+      const transactionStatus =
+        result.status || result.data?.transaction_status;
 
       console.log("Transaction status from backend:", transactionStatus);
       return transactionStatus; // Mengembalikan status transaksi
