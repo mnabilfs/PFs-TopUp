@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import Navbar from "../components/NavBar";
 import FooterUniversal from "../components/FooterUniversal";
+import CustomerService from "../components/CustomerService";
 
 const ProductDetail = () => {
   const sellerPhoneNumber = "6289527400005";
@@ -76,6 +77,7 @@ const ProductDetail = () => {
 
       {/* Footer */}
       <FooterUniversal />
+      <CustomerService/>
     </div>
   );
 };

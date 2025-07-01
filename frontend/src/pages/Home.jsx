@@ -4,6 +4,7 @@ import FooterHome from "../components/FooterHome";
 import { Carousel } from "flowbite-react";
 import { HiChevronLeft, HiChevronRight, HiOutlineUser } from "react-icons/hi";
 import { Link } from "react-router-dom";
+import CustomerService from "../components/CustomerService";
 
 const Home = () => {
   const slides = [
@@ -202,6 +203,7 @@ const Home = () => {
       </div>
 
       <FooterHome />
+      <CustomerService/>
     </div>
   );
 };
