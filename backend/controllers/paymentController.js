@@ -2,6 +2,8 @@
 
 const snap = require("../config/midtrans");
 const db = require("../config/firebase");
+const axios = require("axios");
+const md5 = require("md5");
 const { checkTransactionStatus } = require("../utils/midtransHelper");
 
 // Fungsi untuk membuat pembayaran
@@ -92,7 +94,6 @@ exports.createPayment = async (req, res) => {
 exports.checkPaymentStatus = async (req, res) => {
   const { orderId } = req.params; // Ambil orderId dari params
   
-
   try {
     // Cek status transaksi melalui API Midtrans
     const transactionStatus = await checkTransactionStatus(orderId);
@@ -166,6 +167,152 @@ exports.updateTransactionStatus = async (req, res) => {
     console.error("Error updating transaction status:", error);
     res.status(500).json({
       message: "Failed to update transaction status",
+      error: error.message,
+    });
+  }
+};
+
+// Fungsi untuk Melakukan Top Up Transaksi Pada IAK (Only for Mobile-Legend)
+exports.topupToIAK = async (req, res) => {
+  const { orderId, userId, zoneId, product_code } = req.body;
+
+  const username = process.env.IAK_USERNAME;
+  const api_key = process.env.IAK_API_KEY; 
+  const ref_id = orderId;
+  const customer_id = `${userId}|${zoneId}`;
+  const sign = md5(username + api_key + ref_id);
+
+  const payload = {
+    username,
+    customer_id,
+    ref_id,
+    product_code,
+    sign,
+  };
+
+  try {
+    // 1. Kirim top-up ke IAK
+    const topupResponse = await axios.post(
+      "https://prepaid.iak.dev/api/top-up",
+      payload,
+      { headers: { "Content-Type": "application/json" } }
+    );
+
+    const topupResult = topupResponse.data;
+
+    // 2. Cek ulang status topup di IAK
+    const checkPayload = {
+      username,
+      ref_id,
+      sign,
+    };
+
+    const checkResponse = await axios.post(
+      "https://prepaid.iak.dev/api/check-status",
+      checkPayload,
+      { headers: { "Content-Type": "application/json" } }
+    );
+
+    const checkResult = checkResponse.data;
+
+    const finalStatus = checkResult?.data?.status;
+
+    if (finalStatus === 1) {
+      // Simpan ke Firestore jika perlu
+      await db.collection("transactions").doc(orderId).update({
+        topupStatus: "success",
+        topupAt: new Date(),
+      });
+
+      return res.status(200).json({
+        message: "Top-up berhasil",
+        data: checkResult.data,
+      });
+    }else if(finalStatus === 0) {
+      await db.collection("transactions").doc(orderId).update({
+        topupStatus: "processing",
+        topupAt: new Date(),
+      });
+    
+      return res.status(202).json({
+        message: "Top-up masih dalam proses",
+        data: checkResult.data,
+      });
+    } else {
+      // Mark as failed
+      await db.collection("transactions").doc(orderId).update({
+        topupStatus: "failed",
+        topupAt: new Date(),
+        topupError: checkResult?.data?.message,
+      });
+
+      return res.status(400).json({
+        message: "Top-up gagal",
+        data: checkResult.data,
+      });
+    }
+  } catch (error) {
+    console.error("❌ Error top-up:", error.response?.data || error.message);
+
+    return res.status(500).json({
+      message: "Terjadi kesalahan saat top-up",
+      error: error.response?.data || error.message,
+    });
+  }
+};
+
+// Fungsi Callback Untuk Status
+exports.iakCallbackHandler = async (req, res) => {
+  try {
+    const data = req.body.data;
+
+    const { ref_id, status, message, sn, sign } = data;
+    const expectedSign = md5(process.env.IAK_USERNAME + process.env.IAK_API_KEY + ref_id);
+
+    // Verifikasi sign
+    if (sign !== expectedSign) {
+      return res.status(403).json({ message: "Invalid signature" });
+    }
+
+    // Update transaksi di Firestore berdasarkan ref_id
+    const transactionRef = db.collection("transactions").doc(ref_id);
+
+    await transactionRef.update({
+      status: status === "1" ? "success" : status === "2" ? "failed" : "processing",
+      message,
+      sn: sn || null,
+      updatedAt: new Date(),
+    });
+
+    return res.status(200).json({ message: "Callback received and processed" });
+  } catch (error) {
+    console.error("Callback Error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// Check Status Tanpa Menggunakan Callback
+exports.checkTopupStatus = async (req, res) => {
+  const { orderId } = req.params;
+
+  try {
+    const doc = await db.collection("transactions").doc(orderId).get();
+
+    if (!doc.exists) {
+      return res.status(404).json({ message: "Transaksi tidak ditemukan" });
+    }
+
+    const data = doc.data();
+
+    return res.status(200).json({
+      message: "Status transaksi ditemukan",
+      status: data.topupStatus || "unknown",
+      data,
+    });
+  } catch (error) {
+    console.error("Error checkTopupStatus:", error);
+    return res.status(500).json({
+      message: "Gagal mengambil status transaksi",
       error: error.message,
     });
   }

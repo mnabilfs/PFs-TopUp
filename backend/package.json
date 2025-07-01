@@ -12,6 +12,7 @@
     "express": "^5.1.0",
     "firebase": "^11.7.3",
     "firebase-admin": "^13.4.0",
+    "md5": "^2.3.0",
     "midtrans": "^1.0.7",
     "midtrans-client": "^1.4.2"
   }
