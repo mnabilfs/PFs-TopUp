@@ -87,22 +87,21 @@ const ModalDetailPesanan = ({
   
         const statusResponse = await fetch(`http://localhost:5000/api/payment/check-status/${orderId}`);
         const statusResult = await statusResponse.json();
-        const status = statusResult?.data?.status;
+        const status = statusResult?.data?.topupStatus;
         const message = statusResult?.data?.message || "Tanpa pesan";
   
         console.log(`Percobaan ${attempts}: Status = ${status}`);
   
-        if (status === 1) {
+        if (status === "success") {
           clearInterval(interval);
           alert("Top-up berhasil: " + message);
           navigate(`/payment/success/${orderId}`);
-        } else if (status === 2) {
+        } else if (status === "failed") {
           clearInterval(interval);
           alert("Top-up gagal: " + message);
         } else if (attempts >= maxAttempts) {
           clearInterval(interval);
           alert("Top-up masih diproses, silakan cek kembali nanti.");
-          navigate(`/payment/pending/${orderId}`);
         }
   
         // Jika status === 0 (PROCESS), lanjut polling

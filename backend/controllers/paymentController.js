@@ -177,7 +177,7 @@ exports.topupToIAK = async (req, res) => {
   const { orderId, userId, zoneId, product_code } = req.body;
 
   const username = process.env.IAK_USERNAME;
-  const api_key = process.env.IAK_API_KEY; 
+  const api_key = process.env.IAK_API_KEY;
   const ref_id = orderId;
   const customer_id = `${userId}|${zoneId}`;
   const sign = md5(username + api_key + ref_id);
@@ -190,56 +190,64 @@ exports.topupToIAK = async (req, res) => {
     sign,
   };
 
+  // Fungsi untuk polling check-status
+  const pollCheckStatus = async (maxTries = 5, delayMs = 5000) => {
+    let attempts = 0;
+    while (attempts < maxTries) {
+      attempts++;
+
+      try {
+        const checkPayload = { username, ref_id, sign };
+        const checkResponse = await axios.post(
+          "https://prepaid.iak.id/api/check-status",
+          checkPayload,
+          { headers: { "Content-Type": "application/json" } }
+        );
+
+        const status = checkResponse.data?.data?.status;
+        console.log(`🔁 Attempt ${attempts} - Status: ${status}`);
+
+        if (status === 1 || status === 2) {
+          return checkResponse.data; // Return success or failed
+        }
+      } catch (err) {
+        console.warn(`❌ Gagal check-status pada attempt ${attempts}:`, err.message);
+      }
+
+      // Tunggu sebelum percobaan berikutnya
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+    }
+
+    throw new Error("Status tetap PROCESS setelah beberapa kali percobaan");
+  };
+
   try {
-    // 1. Kirim top-up ke IAK
+    // 1. Kirim permintaan top-up ke IAK
     const topupResponse = await axios.post(
-      "https://prepaid.iak.dev/api/top-up",
+      "https://prepaid.iak.id/api/top-up",
       payload,
       { headers: { "Content-Type": "application/json" } }
     );
 
-    const topupResult = topupResponse.data;
+    console.log("📤 Topup Request Sent:", topupResponse.data);
 
-    // 2. Cek ulang status topup di IAK
-    const checkPayload = {
-      username,
-      ref_id,
-      sign,
-    };
-
-    const checkResponse = await axios.post(
-      "https://prepaid.iak.dev/api/check-status",
-      checkPayload,
-      { headers: { "Content-Type": "application/json" } }
-    );
-
-    const checkResult = checkResponse.data;
-
+    // 2. Lakukan polling status
+    const checkResult = await pollCheckStatus(); // polling up to 5 times
     const finalStatus = checkResult?.data?.status;
 
+    // 3. Tanggapi berdasarkan hasil status
     if (finalStatus === 1) {
-      // Simpan ke Firestore jika perlu
       await db.collection("transactions").doc(orderId).update({
         topupStatus: "success",
         topupAt: new Date(),
+        topupData: checkResult.data,
       });
 
       return res.status(200).json({
         message: "Top-up berhasil",
         data: checkResult.data,
       });
-    }else if(finalStatus === 0) {
-      await db.collection("transactions").doc(orderId).update({
-        topupStatus: "processing",
-        topupAt: new Date(),
-      });
-    
-      return res.status(202).json({
-        message: "Top-up masih dalam proses",
-        data: checkResult.data,
-      });
-    } else {
-      // Mark as failed
+    } else if (finalStatus === 2) {
       await db.collection("transactions").doc(orderId).update({
         topupStatus: "failed",
         topupAt: new Date(),
@@ -252,14 +260,21 @@ exports.topupToIAK = async (req, res) => {
       });
     }
   } catch (error) {
-    console.error("❌ Error top-up:", error.response?.data || error.message);
+    console.error("❌ Error top-up:", error.message);
+
+    await db.collection("transactions").doc(orderId).update({
+      topupStatus: "unknown",
+      topupAt: new Date(),
+      topupError: error.message,
+    });
 
     return res.status(500).json({
-      message: "Terjadi kesalahan saat top-up",
-      error: error.response?.data || error.message,
+      message: "Status belum final setelah beberapa percobaan",
+      error: error.message,
     });
   }
 };
+
 
 // Fungsi Callback Untuk Status
 exports.iakCallbackHandler = async (req, res) => {
@@ -278,7 +293,7 @@ exports.iakCallbackHandler = async (req, res) => {
     const transactionRef = db.collection("transactions").doc(ref_id);
 
     await transactionRef.update({
-      status: status === "1" ? "success" : status === "2" ? "failed" : "processing",
+      topupStatus: status === "1" ? "success" : status === "2" ? "failed" : "processing",
       message,
       sn: sn || null,
       updatedAt: new Date(),
