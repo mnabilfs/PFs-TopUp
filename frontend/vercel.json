@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://pfs-topup-production.up.railway.app/api/:path*"
+      "destination": "https://pfs-topup-production-5a0d.up.railway.app/api/:path*"
     },
     {
       "source": "/(.*)",
