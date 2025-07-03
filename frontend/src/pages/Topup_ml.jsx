@@ -60,7 +60,7 @@ const Topup_ml = () => {
     setFormError(false);
 
     try {
-      const response = await fetch("https://pfs-topup-production.up.railway.app/api/payment/create", {
+      const response = await fetch("https://pfs-topup-production-5a0d.up.railway.app/api/payment/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -96,7 +96,7 @@ const Topup_ml = () => {
   const checkTransactionStatus = async (orderId) => {
     console.log("Checking status for orderId:", orderId);
     try {
-      const response = await fetch(`https://pfs-topup-production.up.railway.app/api/payment/status/${orderId}`); // pakai relative URL
+      const response = await fetch(`https://pfs-topup-production-5a0d.up.railway.app/api/payment/status/${orderId}`); // pakai relative URL
       if (!response.ok) {
         throw new Error(`Failed to fetch transaction status: ${response.statusText}`);
       }
