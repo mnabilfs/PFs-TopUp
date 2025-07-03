@@ -59,7 +59,7 @@ const ModalDetailPesanan = ({
   const handleTopupAfterPayment = async (orderId) => {
     try {
       // 1. Kirim permintaan topup ke backend
-      const topupResponse = await fetch("/api/payment/topup", {
+      const topupResponse = await fetch("https://pfs-topup-production.up.railway.app/api/payment/topup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -85,7 +85,7 @@ const ModalDetailPesanan = ({
       const interval = setInterval(async () => {
         attempts++;
   
-        const statusResponse = await fetch(`/api/payment/check-status/${orderId}`);
+        const statusResponse = await fetch(`https://pfs-topup-production.up.railway.app/api/payment/check-status/${orderId}`);
         const statusResult = await statusResponse.json();
         const status = statusResult?.data?.topupStatus;
         const message = statusResult?.data?.message || "Tanpa pesan";
@@ -117,7 +117,7 @@ const ModalDetailPesanan = ({
   const checkTransactionStatus = async (orderId) => {
     try {
       const response = await fetch(
-        `/api/payment/status/${orderId}`
+        `https://pfs-topup-production.up.railway.app/api/payment/status/${orderId}`
       );
       const result = await response.json();
       const transactionStatus = result.status || result.data?.transaction_status;
