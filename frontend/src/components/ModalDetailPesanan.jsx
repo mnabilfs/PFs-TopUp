@@ -59,7 +59,7 @@ const ModalDetailPesanan = ({
   const handleTopupAfterPayment = async (orderId) => {
     try {
       // 1. Kirim permintaan topup ke backend
-      const topupResponse = await fetch("http://localhost:5000/api/payment/topup", {
+      const topupResponse = await fetch("/api/payment/topup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -85,7 +85,7 @@ const ModalDetailPesanan = ({
       const interval = setInterval(async () => {
         attempts++;
   
-        const statusResponse = await fetch(`http://localhost:5000/api/payment/check-status/${orderId}`);
+        const statusResponse = await fetch(`/api/payment/check-status/${orderId}`);
         const statusResult = await statusResponse.json();
         const status = statusResult?.data?.topupStatus;
         const message = statusResult?.data?.message || "Tanpa pesan";
@@ -117,7 +117,7 @@ const ModalDetailPesanan = ({
   const checkTransactionStatus = async (orderId) => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/payment/status/${orderId}`
+        `/api/payment/status/${orderId}`
       );
       const result = await response.json();
       const transactionStatus = result.status || result.data?.transaction_status;

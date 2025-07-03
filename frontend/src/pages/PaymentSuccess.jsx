@@ -46,7 +46,7 @@ const PaymentSuccess = () => {
     const fetchTransaction = async () => {
       try {
         const response = await fetch(
-          `http://localhost:5000/api/payment/status/${orderId}`
+          `/api/payment/status/${orderId}`
         );
         const result = await response.json();
         setTransactionData(result.data);
