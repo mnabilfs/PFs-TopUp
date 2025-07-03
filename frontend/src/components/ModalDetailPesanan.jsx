@@ -85,7 +85,7 @@ const ModalDetailPesanan = ({
       const interval = setInterval(async () => {
         attempts++;
   
-        const statusResponse = await fetch(`hhttps://pfs-topup-production-5a0d.up.railway.app/api/payment/check-status/${orderId}`);
+        const statusResponse = await fetch(`https://pfs-topup-production-5a0d.up.railway.app/api/payment/check-status/${orderId}`);
         const statusResult = await statusResponse.json();
         const status = statusResult?.data?.topupStatus;
         const message = statusResult?.data?.message || "Tanpa pesan";
