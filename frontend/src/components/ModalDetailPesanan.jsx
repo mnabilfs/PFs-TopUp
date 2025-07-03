@@ -31,7 +31,7 @@ const ModalDetailPesanan = ({
       window.snap.pay(snapToken, {
         onSuccess: async function (result) {
           console.log("Success:", result);
-          const orderId = result.order_id; // Dapatkan orderId dari hasil response
+           const orderId = result.order_id; // Dapatkan orderId dari hasil response
 
           // Pengecekan status transaksi setelah pembayaran berhasil
           const transactionStatus = await checkTransactionStatus(orderId);
@@ -77,7 +77,6 @@ const ModalDetailPesanan = ({
       if (!topupResponse.ok) {
         alert("Top-up gagal: " + (topupResult.message || "Tidak diketahui"));
         return;
-
       }
   
       // 2. Mulai polling status setiap 3 detik
@@ -88,22 +87,21 @@ const ModalDetailPesanan = ({
   
         const statusResponse = await fetch(`http://localhost:5000/api/payment/check-status/${orderId}`);
         const statusResult = await statusResponse.json();
-        const status = statusResult?.data?.status;
+        const status = statusResult?.data?.topupStatus;
         const message = statusResult?.data?.message || "Tanpa pesan";
   
         console.log(`Percobaan ${attempts}: Status = ${status}`);
   
-        if (status === 1) {
+        if (status === "success") {
           clearInterval(interval);
           alert("Top-up berhasil: " + message);
           navigate(`/payment/success/${orderId}`);
-        } else if (status === 2) {
+        } else if (status === "failed") {
           clearInterval(interval);
           alert("Top-up gagal: " + message);
         } else if (attempts >= maxAttempts) {
           clearInterval(interval);
           alert("Top-up masih diproses, silakan cek kembali nanti.");
-          navigate(`/payment/pending/${orderId}`);
         }
   
         // Jika status === 0 (PROCESS), lanjut polling
@@ -122,8 +120,7 @@ const ModalDetailPesanan = ({
         `http://localhost:5000/api/payment/status/${orderId}`
       );
       const result = await response.json();
-      const transactionStatus =
-        result.status || result.data?.transaction_status;
+      const transactionStatus = result.status || result.data?.transaction_status;
 
       console.log("Transaction status from backend:", transactionStatus);
       return transactionStatus; // Mengembalikan status transaksi
