@@ -6,6 +6,7 @@ import ModalDetailPesanan from "../components/ModalDetailPesanan";
 import FooterUniversal from "../components/FooterUniversal";
 import Navbar from "../components/NavBar";
 import Banner from "../assets/BannerPfsStore.png";
+import CustomerService from "../components/CustomerService";
 
 const Topup_ml = () => {
   const [selectedTopup, setSelectedTopup] = useState(null);
@@ -340,6 +341,7 @@ const Topup_ml = () => {
         </div>
       </div>
       <FooterUniversal />
+      <CustomerService/>
 
       {/* Modal Detail Pesanan */}
       {openModal && !nicknameError && (
