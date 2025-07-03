@@ -96,7 +96,7 @@ const Topup_ml = () => {
   const checkTransactionStatus = async (orderId) => {
     console.log("Checking status for orderId:", orderId);
     try {
-      const response = await fetch(`/api/payment/status/${orderId}`); // pakai relative URL
+      const response = await fetch(`https://pfs-topup-production.up.railway.app/api/payment/status/${orderId}`); // pakai relative URL
       if (!response.ok) {
         throw new Error(`Failed to fetch transaction status: ${response.statusText}`);
       }
