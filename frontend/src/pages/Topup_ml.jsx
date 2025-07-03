@@ -60,7 +60,7 @@ const Topup_ml = () => {
     setFormError(false);
 
     try {
-      const response = await fetch("https://pfs-topup-production.up.railway.app/api/payment/create", {
+      const response = await fetch("https://pfs-topup-production-5a0d.up.railway.app/api/payment/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
